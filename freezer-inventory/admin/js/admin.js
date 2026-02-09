@@ -3,6 +3,10 @@
 
     var API_BASE = typeof freezerInventory !== 'undefined' ? freezerInventory.restUrl : '';
     var NONCE = typeof freezerInventory !== 'undefined' ? freezerInventory.nonce : '';
+    var LOCATIONS = typeof freezerInventory !== 'undefined' ? freezerInventory.locations : [];
+
+    var CATEGORIES = ['Meat', 'Vegetables', 'Fruits', 'Prepared Meals', 'Dairy', 'Bread', 'Other'];
+    var UNITS = ['lbs', 'oz', 'pieces', 'bags', 'containers', 'packages'];
 
     function headers() {
         var h = { 'Content-Type': 'application/json' };
@@ -11,7 +15,7 @@
     }
 
     var addItemForm = document.getElementById('addItemForm');
-    var inventoryList = document.getElementById('inventoryList');
+    var inventoryBody = document.getElementById('inventoryBody');
     var searchInput = document.getElementById('searchInput');
     var categoryFilter = document.getElementById('categoryFilter');
     var zoneFilter = document.getElementById('zoneFilter');
@@ -21,6 +25,7 @@
 
     var allItems = [];
     var filteredItems = [];
+    var editingCell = null; // track currently editing cell to avoid duplicates
 
     function setupEventListeners() {
         if (addItemForm) addItemForm.addEventListener('submit', handleAddItem);
@@ -82,50 +87,42 @@
             });
     }
 
-    function useQuantity(item, useInput) {
-        var amount = parseFloat(useInput.value);
-        if (isNaN(amount) || amount <= 0) {
-            showError('Enter a valid amount to use (greater than 0).');
-            return;
-        }
-        var currentQty = item.quantity;
-        if (amount > currentQty) {
-            showError('Cannot use more than ' + currentQty + ' ' + item.unit + '.');
-            return;
-        }
-        var newQty = Math.round((currentQty - amount) * 1000) / 1000;
-        if (newQty <= 0) {
-            fetch(API_BASE + '/items/' + encodeURIComponent(item.id), { method: 'DELETE', headers: headers() })
-                .then(function(r) {
-                    if (!r.ok) throw new Error('Failed to remove item');
-                    allItems = allItems.filter(function(i) { return i.id !== item.id; });
-                    filteredItems = filteredItems.filter(function(i) { return i.id !== item.id; });
-                    updateFilters();
-                    renderInventory();
-                    updateStats();
-                    showSuccess('Item used up and removed.');
-                })
-                .catch(function(err) { showError(err.message); });
-            return;
-        }
-        fetch(API_BASE + '/items/' + encodeURIComponent(item.id), {
+    function saveField(itemId, field, value) {
+        var data = {};
+        data[field] = value;
+
+        // Update local state optimistically
+        var item = allItems.find(function(i) { return i.id === itemId; });
+        if (!item) return Promise.reject(new Error('Item not found'));
+        var oldValue = item[field];
+        item[field] = value;
+        var fItem = filteredItems.find(function(i) { return i.id === itemId; });
+        if (fItem) fItem[field] = value;
+
+        return fetch(API_BASE + '/items/' + encodeURIComponent(itemId), {
             method: 'PUT',
             headers: headers(),
-            body: JSON.stringify({ quantity: newQty })
+            body: JSON.stringify(data)
         })
             .then(function(r) { return r.json().then(function(j) { return { ok: r.ok, json: j }; }); })
             .then(function(res) {
-                if (!res.ok) throw new Error(res.json.error || 'Failed to update');
-                var idx = allItems.findIndex(function(i) { return i.id === item.id; });
+                if (!res.ok) {
+                    // Revert on failure
+                    item[field] = oldValue;
+                    if (fItem) fItem[field] = oldValue;
+                    throw new Error(res.json.error || 'Failed to update');
+                }
+                // Sync full item from server
+                var idx = allItems.findIndex(function(i) { return i.id === itemId; });
                 if (idx !== -1) allItems[idx] = res.json;
-                var fidx = filteredItems.findIndex(function(i) { return i.id === item.id; });
+                var fidx = filteredItems.findIndex(function(i) { return i.id === itemId; });
                 if (fidx !== -1) filteredItems[fidx] = res.json;
-                useInput.value = '';
-                renderInventory();
                 updateStats();
-                showSuccess('Quantity updated to ' + newQty + ' ' + item.unit + '.');
             })
-            .catch(function(err) { showError(err.message); });
+            .catch(function(err) {
+                showError('Failed to update: ' + err.message);
+                renderInventory();
+            });
     }
 
     function deleteItem(itemId) {
@@ -202,43 +199,254 @@
         return div.innerHTML;
     }
 
-    function createItemCard(item) {
-        var dateStr = item.date_added ? new Date(item.date_added).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-        var notesHtml = item.notes ? '<div class="item-notes">' + escapeHtml(item.notes) + '</div>' : '';
-        return '<div class="item-card" data-item-id="' + escapeHtml(item.id) + '">' +
-            '<h3>' + escapeHtml(item.name) + '</h3>' +
-            '<span class="category-badge category-badge-' + escapeHtml(item.category).replace(/\s+/g, '-') + '">' + escapeHtml(item.category) + '</span>' +
-            '<div class="item-details">' +
-            '<div class="item-detail"><strong>Quantity:</strong> <span class="item-quantity-display">' + item.quantity + ' ' + escapeHtml(item.unit) + '</span></div>' +
-            '<div class="item-detail"><strong>Location:</strong> <span>' + escapeHtml(item.freezer_zone) + '</span></div>' +
-            notesHtml +
-            '</div>' +
-            '<div class="item-use-quantity">' +
-            '<label for="use-qty-' + escapeHtml(item.id) + '">Use:</label>' +
-            '<input type="number" id="use-qty-' + escapeHtml(item.id) + '" class="use-qty-input" min="0" step="0.1" placeholder="0">' +
-            '<span class="use-qty-unit">' + escapeHtml(item.unit) + '</span>' +
-            '<button type="button" class="btn btn-use" data-item-id="' + escapeHtml(item.id) + '">Use</button>' +
-            '</div>' +
-            '<div class="item-date">Added: ' + dateStr + '</div>' +
-            '<div class="item-actions"><button type="button" class="btn btn-danger" data-item-id="' + escapeHtml(item.id) + '">Remove</button></div>' +
-            '</div>';
+    // --- Inline editing helpers ---
+
+    function makeEditable(td, item, field, type) {
+        td.classList.add('editable-cell');
+        td.addEventListener('click', function() {
+            startEditing(td, item, field, type);
+        });
+    }
+
+    function startEditing(td, item, field, type) {
+        // Don't re-enter if already editing this cell
+        if (td.querySelector('input, select')) return;
+
+        // If another cell is being edited, commit it first
+        if (editingCell && editingCell !== td) {
+            commitEdit(editingCell);
+        }
+
+        editingCell = td;
+        var currentValue = item[field];
+        td.classList.add('editing');
+        td.innerHTML = '';
+
+        var input;
+        if (type === 'select-category') {
+            input = document.createElement('select');
+            CATEGORIES.forEach(function(cat) {
+                var opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                if (cat === currentValue) opt.selected = true;
+                input.appendChild(opt);
+            });
+        } else if (type === 'select-unit') {
+            input = document.createElement('select');
+            UNITS.forEach(function(u) {
+                var opt = document.createElement('option');
+                opt.value = u;
+                opt.textContent = u;
+                if (u === currentValue) opt.selected = true;
+                input.appendChild(opt);
+            });
+        } else if (type === 'select-location') {
+            input = document.createElement('select');
+            LOCATIONS.forEach(function(loc) {
+                var opt = document.createElement('option');
+                opt.value = loc;
+                opt.textContent = loc;
+                if (loc === currentValue) opt.selected = true;
+                input.appendChild(opt);
+            });
+        } else if (type === 'number') {
+            input = document.createElement('input');
+            input.type = 'number';
+            input.step = '0.001';
+            input.min = '0';
+            input.value = currentValue != null ? currentValue : '';
+        } else {
+            input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentValue != null ? currentValue : '';
+        }
+
+        input.className = 'cell-editor';
+        input.dataset.itemId = item.id;
+        input.dataset.field = field;
+        input.dataset.originalValue = currentValue != null ? String(currentValue) : '';
+
+        td.appendChild(input);
+        input.focus();
+        if (input.select) input.select();
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                commitEdit(td);
+                // Move to next editable row same column
+                var tr = td.parentElement;
+                var nextRow = tr.nextElementSibling;
+                if (nextRow) {
+                    var idx = Array.prototype.indexOf.call(tr.children, td);
+                    var nextTd = nextRow.children[idx];
+                    if (nextTd && nextTd.classList.contains('editable-cell')) {
+                        nextTd.click();
+                    }
+                }
+            } else if (e.key === 'Escape') {
+                cancelEdit(td, item, field, type);
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                commitEdit(td);
+                // Move to next editable cell in the row
+                var cells = td.parentElement.querySelectorAll('.editable-cell');
+                var cellArr = Array.prototype.slice.call(cells);
+                var curIdx = cellArr.indexOf(td);
+                var nextCell = e.shiftKey ? cellArr[curIdx - 1] : cellArr[curIdx + 1];
+                if (nextCell) {
+                    nextCell.click();
+                }
+            }
+        });
+
+        // For selects, commit on change
+        if (input.tagName === 'SELECT') {
+            input.addEventListener('change', function() {
+                commitEdit(td);
+            });
+        }
+
+        input.addEventListener('blur', function() {
+            // Small delay to allow click events on other cells to fire first
+            setTimeout(function() {
+                if (editingCell === td) {
+                    commitEdit(td);
+                }
+            }, 100);
+        });
+    }
+
+    function commitEdit(td) {
+        var input = td.querySelector('input, select');
+        if (!input) return;
+
+        var itemId = input.dataset.itemId;
+        var field = input.dataset.field;
+        var originalValue = input.dataset.originalValue;
+        var newValue = input.value;
+
+        if (field === 'quantity') {
+            newValue = parseFloat(newValue);
+            if (isNaN(newValue) || newValue < 0) {
+                newValue = parseFloat(originalValue);
+            }
+        }
+
+        td.classList.remove('editing');
+        editingCell = null;
+
+        // Update display immediately
+        if (field === 'quantity') {
+            var item = allItems.find(function(i) { return i.id === itemId; });
+            td.textContent = newValue + (item ? ' ' + item.unit : '');
+        } else if (field === 'category') {
+            td.innerHTML = '<span class="category-badge category-badge-' + escapeHtml(String(newValue)).replace(/\s+/g, '-') + '">' + escapeHtml(String(newValue)) + '</span>';
+        } else {
+            td.textContent = newValue != null ? String(newValue) : '';
+        }
+
+        // Only save if value actually changed
+        if (String(newValue) !== originalValue) {
+            saveField(itemId, field, newValue);
+        }
+    }
+
+    function cancelEdit(td, item, field, type) {
+        td.classList.remove('editing');
+        editingCell = null;
+        var value = item[field];
+        if (field === 'quantity') {
+            td.textContent = value + ' ' + item.unit;
+        } else if (field === 'category') {
+            td.innerHTML = '<span class="category-badge category-badge-' + escapeHtml(String(value)).replace(/\s+/g, '-') + '">' + escapeHtml(String(value)) + '</span>';
+        } else {
+            td.textContent = value != null ? String(value) : '';
+        }
+    }
+
+    // --- Rendering ---
+
+    function createItemRow(item) {
+        var tr = document.createElement('tr');
+        tr.dataset.itemId = item.id;
+
+        // Name
+        var tdName = document.createElement('td');
+        tdName.textContent = item.name || '';
+        makeEditable(tdName, item, 'name', 'text');
+        tr.appendChild(tdName);
+
+        // Category
+        var tdCategory = document.createElement('td');
+        tdCategory.innerHTML = '<span class="category-badge category-badge-' + escapeHtml(item.category).replace(/\s+/g, '-') + '">' + escapeHtml(item.category) + '</span>';
+        makeEditable(tdCategory, item, 'category', 'select-category');
+        tr.appendChild(tdCategory);
+
+        // Quantity
+        var tdQty = document.createElement('td');
+        tdQty.textContent = item.quantity + ' ' + (item.unit || '');
+        makeEditable(tdQty, item, 'quantity', 'number');
+        tr.appendChild(tdQty);
+
+        // Unit
+        var tdUnit = document.createElement('td');
+        tdUnit.textContent = item.unit || '';
+        makeEditable(tdUnit, item, 'unit', 'select-unit');
+        tr.appendChild(tdUnit);
+
+        // Location
+        var tdLoc = document.createElement('td');
+        tdLoc.textContent = item.freezer_zone || '';
+        makeEditable(tdLoc, item, 'freezer_zone', 'select-location');
+        tr.appendChild(tdLoc);
+
+        // Notes
+        var tdNotes = document.createElement('td');
+        tdNotes.textContent = item.notes || '';
+        tdNotes.className = 'cell-notes';
+        makeEditable(tdNotes, item, 'notes', 'text');
+        tr.appendChild(tdNotes);
+
+        // Date Added
+        var tdDate = document.createElement('td');
+        tdDate.className = 'cell-date';
+        tdDate.textContent = item.date_added ? new Date(item.date_added).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+        tr.appendChild(tdDate);
+
+        // Actions
+        var tdActions = document.createElement('td');
+        tdActions.className = 'cell-actions';
+        var delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn btn-danger btn-sm';
+        delBtn.textContent = 'Remove';
+        delBtn.addEventListener('click', function() { deleteItem(item.id); });
+        tdActions.appendChild(delBtn);
+        tr.appendChild(tdActions);
+
+        return tr;
     }
 
     function renderInventory() {
-        if (!inventoryList) return;
+        if (!inventoryBody) return;
+        editingCell = null;
+        inventoryBody.innerHTML = '';
+
         if (filteredItems.length === 0) {
-            inventoryList.innerHTML = '<p class="empty-message">No items found. ' + (allItems.length === 0 ? 'Add your first item above!' : 'Try adjusting your filters.') + '</p>';
+            var tr = document.createElement('tr');
+            var td = document.createElement('td');
+            td.colSpan = 8;
+            td.className = 'empty-message';
+            td.textContent = allItems.length === 0 ? 'No items in freezer. Add your first item above!' : 'No items found. Try adjusting your filters.';
+            tr.appendChild(td);
+            inventoryBody.appendChild(tr);
             return;
         }
-        inventoryList.innerHTML = filteredItems.map(createItemCard).join('');
+
         filteredItems.forEach(function(item) {
-            var card = inventoryList.querySelector('.item-card[data-item-id="' + item.id + '"]');
-            if (!card) return;
-            var delBtn = card.querySelector('.btn-danger[data-item-id]');
-            if (delBtn) delBtn.addEventListener('click', function() { deleteItem(item.id); });
-            var useBtn = card.querySelector('.btn-use[data-item-id]');
-            var useInput = card.querySelector('.use-qty-input');
-            if (useBtn && useInput) useBtn.addEventListener('click', function() { useQuantity(item, useInput); });
+            inventoryBody.appendChild(createItemRow(item));
         });
     }
 
@@ -252,8 +460,8 @@
         filteredItems.forEach(function(item) {
             catCounts[item.category] = (catCounts[item.category] || 0) + 1;
         });
-        var catSummary = Object.keys(catCounts).map(function(c) { return c + ': ' + catCounts[c]; }).join(' • ');
-        inventoryStats.innerHTML = '<strong>Showing ' + filteredItems.length + ' of ' + allItems.length + ' items</strong>' + (catSummary ? ' • ' + catSummary : '');
+        var catSummary = Object.keys(catCounts).map(function(c) { return c + ': ' + catCounts[c]; }).join(' \u2022 ');
+        inventoryStats.innerHTML = '<strong>Showing ' + filteredItems.length + ' of ' + allItems.length + ' items</strong>' + (catSummary ? ' \u2022 ' + catSummary : '');
     }
 
     function showError(message) {

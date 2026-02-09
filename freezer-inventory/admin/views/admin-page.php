@@ -96,8 +96,24 @@ defined( 'ABSPATH' ) || exit;
                     <div id="inventoryStats" class="stats"></div>
                     <button type="button" id="downloadPdfBtn" class="btn btn-pdf">Download PDF</button>
                 </div>
-                <div id="inventoryList" class="inventory-list">
-                    <p class="empty-message">No items in freezer. Add your first item above!</p>
+                <div class="inventory-table-wrap">
+                    <table id="inventoryTable" class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Location</th>
+                                <th>Notes</th>
+                                <th>Date Added</th>
+                                <th class="col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryBody">
+                            <tr><td colspan="8" class="empty-message">No items in freezer. Add your first item above!</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </main>
