@@ -87,7 +87,27 @@
             });
     }
 
+    function removeItem(itemId) {
+        fetch(API_BASE + '/items/' + encodeURIComponent(itemId), { method: 'DELETE', headers: headers() })
+            .then(function(r) {
+                if (!r.ok) throw new Error('Failed to remove item');
+                allItems = allItems.filter(function(i) { return i.id !== itemId; });
+                filteredItems = filteredItems.filter(function(i) { return i.id !== itemId; });
+                updateFilters();
+                renderInventory();
+                updateStats();
+                showSuccess('Item used up and removed.');
+            })
+            .catch(function(err) { showError(err.message); });
+    }
+
     function saveField(itemId, field, value) {
+        // Auto-delete when quantity reaches 0
+        if (field === 'quantity' && value <= 0) {
+            removeItem(itemId);
+            return Promise.resolve();
+        }
+
         var data = {};
         data[field] = value;
 
@@ -123,21 +143,6 @@
                 showError('Failed to update: ' + err.message);
                 renderInventory();
             });
-    }
-
-    function deleteItem(itemId) {
-        if (!confirm('Are you sure you want to remove this item from your freezer?')) return;
-        fetch(API_BASE + '/items/' + encodeURIComponent(itemId), { method: 'DELETE', headers: headers() })
-            .then(function(r) {
-                if (!r.ok) throw new Error('Failed to delete item');
-                allItems = allItems.filter(function(i) { return i.id !== itemId; });
-                filteredItems = filteredItems.filter(function(i) { return i.id !== itemId; });
-                updateFilters();
-                renderInventory();
-                updateStats();
-                showSuccess('Item removed successfully!');
-            })
-            .catch(function(err) { showError(err.message); });
     }
 
     function applyFilters() {
@@ -415,17 +420,6 @@
         tdDate.textContent = item.date_added ? new Date(item.date_added).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
         tr.appendChild(tdDate);
 
-        // Actions
-        var tdActions = document.createElement('td');
-        tdActions.className = 'cell-actions';
-        var delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'btn btn-danger btn-sm';
-        delBtn.textContent = 'Remove';
-        delBtn.addEventListener('click', function() { deleteItem(item.id); });
-        tdActions.appendChild(delBtn);
-        tr.appendChild(tdActions);
-
         return tr;
     }
 
@@ -437,7 +431,7 @@
         if (filteredItems.length === 0) {
             var tr = document.createElement('tr');
             var td = document.createElement('td');
-            td.colSpan = 8;
+            td.colSpan = 7;
             td.className = 'empty-message';
             td.textContent = allItems.length === 0 ? 'No items in freezer. Add your first item above!' : 'No items found. Try adjusting your filters.';
             tr.appendChild(td);

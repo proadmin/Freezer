@@ -34,6 +34,10 @@ class Freezer_Admin {
 		if ( $hook !== 'toplevel_page_freezer-inventory' ) {
 			return;
 		}
+		self::do_enqueue_assets();
+	}
+
+	public static function do_enqueue_assets() {
 		wp_enqueue_style(
 			'freezer-inventory-admin',
 			FREEZER_INVENTORY_PLUGIN_URL . 'admin/css/admin.css',
@@ -57,6 +61,16 @@ class Freezer_Admin {
 	public static function render_page() {
 		$locations = self::LOCATIONS;
 		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/admin-page.php';
+	}
+
+	public static function shortcode() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return '<p>You do not have permission to view the freezer inventory.</p>';
+		}
+		self::do_enqueue_assets();
+		ob_start();
+		self::render_page();
+		return ob_get_clean();
 	}
 
 	/**

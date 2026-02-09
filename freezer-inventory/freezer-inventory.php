@@ -28,3 +28,4 @@ register_activation_hook( __FILE__, array( 'Freezer_Database', 'create_table' ) 
 add_action( 'rest_api_init', array( 'Freezer_Rest', 'register_routes' ) );
 add_action( 'admin_menu', array( 'Freezer_Admin', 'add_menu' ) );
 add_action( 'admin_enqueue_scripts', array( 'Freezer_Admin', 'enqueue_assets' ) );
+add_shortcode( 'freezer_inventory', array( 'Freezer_Admin', 'shortcode' ) );

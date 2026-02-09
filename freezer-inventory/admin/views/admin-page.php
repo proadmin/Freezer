@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="wrap freezer-inventory-wrap">
+<div class="freezer-inventory-wrap">
     <div class="freezer-inventory-container">
         <header class="freezer-inventory-header">
             <h1>🧊 Freezer Inventory Manager</h1>
@@ -107,11 +107,10 @@ defined( 'ABSPATH' ) || exit;
                                 <th>Location</th>
                                 <th>Notes</th>
                                 <th>Date Added</th>
-                                <th class="col-actions">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody">
-                            <tr><td colspan="8" class="empty-message">No items in freezer. Add your first item above!</td></tr>
+                            <tr><td colspan="7" class="empty-message">No items in freezer. Add your first item above!</td></tr>
                         </tbody>
                     </table>
                 </div>
