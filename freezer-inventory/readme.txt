@@ -14,17 +14,18 @@ Manage your freezer inventory with an editable spreadsheet table, categories, ma
 
 Freezer Inventory Manager lets you:
 
-* Add items with name, category, quantity, unit, location (freezer/shelf/bin), and notes
+* Add items with name, category, quantity, unit, location (freezer/shelf/bin), date, and notes
 * Edit any field directly in the inventory table (click a cell to edit, like a spreadsheet)
+* Editable date field with inline date picker
 * Navigate between cells with Tab, Enter, and Escape keys
 * Items are automatically removed when quantity reaches zero
 * Search and filter by name, category, freezer, shelf, and bin
 * Manage freezers, locations, and item names from dedicated admin pages
 * Item name autocomplete dropdown that learns new names as you add items
-* Cascading location dropdowns (freezer → shelf → bin)
-* Export inventory as CSV or open a print-friendly PDF view
-* Import inventory from CSV files
-* Embed the full inventory on any frontend page with the `[freezer_inventory]` shortcode
+* Cascading location dropdowns (freezer → shelf → bin); bin is optional
+* Dedicated CSV Import / Export admin page with column documentation and example CSV
+* Print-friendly PDF view
+* Embed the full inventory on any frontend page with the `[freezer_inventory]` shortcode (without CSV functions)
 
 == Installation ==
 
@@ -48,7 +49,7 @@ Click "Download PDF" on the Freezer Inventory page. A new tab opens with a print
 
 = How do I export/import CSV? =
 
-Click "Export CSV" to download the inventory as a CSV file. Click "Import CSV" to replace all inventory items from a CSV file (freezer/shelf/bin columns are supported and locations are auto-created).
+Go to Freezer Inventory > CSV Import / Export. Click "Export CSV" to download the inventory. Click "Choose CSV File to Import" to replace all inventory items from a CSV file. The page includes column documentation and a downloadable example CSV. Freezer/shelf/bin columns are supported and locations are auto-created.
 
 = Can I use this on the frontend? =
 
@@ -56,7 +57,7 @@ Yes. Add the shortcode `[freezer_inventory]` to any WordPress page or post. The 
 
 = How do I edit an item? =
 
-Click any cell in the inventory table to edit it in place. Use Tab to move between cells in a row, Enter to move down a column, and Escape to cancel. Location cells open cascading freezer/shelf/bin dropdowns.
+Click any cell in the inventory table to edit it in place, including the date. Use Tab to move between cells in a row, Enter to move down a column, and Escape to cancel. Location cells open cascading freezer/shelf/bin dropdowns. Date cells open a date picker.
 
 = What happens when quantity reaches zero? =
 
@@ -67,6 +68,16 @@ The item is automatically deleted from the inventory.
 You can delete them from their respective admin pages, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 2.0.6 =
+* Moved CSV import/export to a dedicated admin page with column documentation and downloadable example CSV
+* Made Date Added field editable via inline date picker
+* Added Date Added field to the add item form, auto-populated with today's date
+* Changed quantity step to whole numbers
+* Made bin field optional on all forms
+* Auto-create locations when adding items with new freezer/shelf/bin combinations
+* Created separate frontend view for the shortcode (without CSV import/export)
+* Freezer dropdown in add form now pulls from managed freezers table
 
 = 2.0.3 =
 * Normalized locations into a dedicated table with freezer, shelf, and bin fields

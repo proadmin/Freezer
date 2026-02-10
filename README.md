@@ -5,18 +5,19 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 ## Features
 
 - **Editable table** — click any cell to edit it in place, like a spreadsheet
+- **Editable dates** — inline date picker for the Date Added column
 - **Keyboard navigation** — Tab between cells, Enter to move down, Escape to cancel
-- **Add items** with name, category, quantity, unit, location (freezer/shelf/bin), and notes
-- **Cascading location dropdowns** — freezer → shelf → bin on add form, filters, and inline editing
+- **Add items** with name, category, quantity, unit, location (freezer/shelf/bin), date, and notes
+- **Cascading location dropdowns** — freezer → shelf → bin on add form, filters, and inline editing; bin is optional
 - **Managed freezers** — add/delete freezer names from the Freezers admin page
 - **Managed locations** — add/delete freezer/shelf/bin combinations from the Locations admin page
 - **Item name autocomplete** — dropdown learns new names as you add items; manage the list from the Item Names admin page
 - **Delete protection** — freezers, locations, and item names can't be deleted while in use
 - **Auto-remove** items when quantity reaches zero
 - **Search and filter** by name, category, freezer, shelf, and bin
-- **CSV export/import** — download inventory as CSV or import from CSV
+- **CSV import/export** — dedicated admin page with column documentation and example CSV
 - **PDF export** — print-friendly view in a new tab
-- **Frontend shortcode** — embed on any page with `[freezer_inventory]`
+- **Frontend shortcode** — embed on any page with `[freezer_inventory]` (without CSV functions)
 - **Admin-only access** — requires `manage_options` capability
 
 ## Installation
@@ -35,10 +36,11 @@ Add `[freezer_inventory]` to any page or post. The user must be logged in as an 
 
 ## Admin Pages
 
-- **Freezer Inventory** — main inventory table with add form, filters, and export
+- **Freezer Inventory** — main inventory table with add form, filters, and PDF export
 - **Locations** — manage freezer/shelf/bin location combinations
 - **Freezers** — manage freezer names used in locations
 - **Item Names** — manage the autocomplete list for item names
+- **CSV Import / Export** — export inventory as CSV, import from CSV with column docs and example file
 
 ## Requirements
 
