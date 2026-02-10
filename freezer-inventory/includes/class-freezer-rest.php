@@ -58,6 +58,11 @@ class Freezer_Rest {
 				),
 			),
 		) );
+		register_rest_route( $namespace, '/items/import-csv', array(
+			'methods'             => WP_REST_Server::CREATABLE,
+			'callback'            => array( __CLASS__, 'import_csv' ),
+			'permission_callback' => array( __CLASS__, 'check_permission' ),
+		) );
 		register_rest_route( $namespace, '/inventory/pdf', array(
 			'methods'             => WP_REST_Server::READABLE,
 			'callback'            => array( __CLASS__, 'get_pdf' ),
@@ -111,6 +116,50 @@ class Freezer_Rest {
 			return new WP_REST_Response( array( 'error' => $result->get_error_message() ), 404 );
 		}
 		return new WP_REST_Response( $result, 200 );
+	}
+
+	public static function import_csv( $request ) {
+		$files = $request->get_file_params();
+		if ( empty( $files['file']['tmp_name'] ) ) {
+			return new WP_REST_Response( array( 'error' => 'No file uploaded.' ), 400 );
+		}
+		$file = $files['file']['tmp_name'];
+		$handle = fopen( $file, 'r' );
+		if ( ! $handle ) {
+			return new WP_REST_Response( array( 'error' => 'Could not read file.' ), 400 );
+		}
+
+		// Read header row
+		$header = fgetcsv( $handle );
+		if ( ! $header ) {
+			fclose( $handle );
+			return new WP_REST_Response( array( 'error' => 'Empty CSV file.' ), 400 );
+		}
+		$header = array_map( 'strtolower', array_map( 'trim', $header ) );
+
+		$items = array();
+		while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+			if ( count( $row ) !== count( $header ) ) {
+				continue;
+			}
+			$item = array_combine( $header, $row );
+			// Map common column names
+			if ( isset( $item['location'] ) && ! isset( $item['freezer_zone'] ) ) {
+				$item['freezer_zone'] = $item['location'];
+			}
+			if ( isset( $item['freezer_zone'] ) && ! isset( $item['location'] ) ) {
+				$item['location'] = $item['freezer_zone'];
+			}
+			$items[] = $item;
+		}
+		fclose( $handle );
+
+		if ( empty( $items ) ) {
+			return new WP_REST_Response( array( 'error' => 'No valid rows found in CSV.' ), 400 );
+		}
+
+		$count = Freezer_Database::replace_all_items( $items );
+		return new WP_REST_Response( array( 'imported' => $count ), 200 );
 	}
 
 	public static function get_pdf( $request ) {

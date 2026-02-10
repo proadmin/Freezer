@@ -25,6 +25,8 @@
 .btn-secondary:hover { background: #3c434a; }
 .btn-pdf { background: #00a32a; color: #fff; }
 .btn-pdf:hover { background: #008a20; color: #fff; }
+.btn-import { background: #2271b1; color: #fff; display: inline-block; }
+.btn-import:hover { background: #135e96; color: #fff; }
 
 .filters-section { background: #f6f7f7; padding: 15px; border-radius: 4px; border: 1px solid #dcdcde; }
 .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }

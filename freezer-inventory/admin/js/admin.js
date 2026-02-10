@@ -22,6 +22,7 @@
     var clearFiltersBtn = document.getElementById('clearFilters');
     var inventoryStats = document.getElementById('inventoryStats');
     var downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    var csvFileInput = document.getElementById('csvFileInput');
 
     var allItems = [];
     var filteredItems = [];
@@ -34,6 +35,7 @@
         if (zoneFilter) zoneFilter.addEventListener('change', applyFilters);
         if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', clearFilters);
         if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', handleDownloadPdf);
+        if (csvFileInput) csvFileInput.addEventListener('change', handleCsvImport);
     }
 
     function loadInventory() {
@@ -476,6 +478,35 @@
         div.textContent = message;
         formSection.insertBefore(div, formSection.firstChild);
         setTimeout(function() { div.remove(); }, 3000);
+    }
+
+    function handleCsvImport() {
+        var file = csvFileInput.files[0];
+        if (!file) return;
+        if (!confirm('WARNING: Importing a CSV will replace ALL current inventory items. This cannot be undone.\n\nAre you sure you want to continue?')) {
+            csvFileInput.value = '';
+            return;
+        }
+        var formData = new FormData();
+        formData.append('file', file);
+        var h = {};
+        if (NONCE) h['X-WP-Nonce'] = NONCE;
+        fetch(API_BASE + '/items/import-csv', {
+            method: 'POST',
+            headers: h,
+            body: formData
+        })
+            .then(function(r) { return r.json().then(function(j) { return { ok: r.ok, json: j }; }); })
+            .then(function(res) {
+                csvFileInput.value = '';
+                if (!res.ok) throw new Error(res.json.error || 'Import failed');
+                showSuccess('Imported ' + res.json.imported + ' items.');
+                loadInventory();
+            })
+            .catch(function(err) {
+                csvFileInput.value = '';
+                showError('CSV import failed: ' + err.message);
+            });
     }
 
     function handleDownloadPdf() {

@@ -178,6 +178,28 @@ class Freezer_Database {
 		return self::get_item_by_id( $id );
 	}
 
+	/**
+	 * Delete all items and insert new ones.
+	 *
+	 * @param array $items Array of item arrays with name, category, quantity, unit, location, notes.
+	 * @return int|WP_Error Number of items inserted or error.
+	 */
+	public static function replace_all_items( $items ) {
+		global $wpdb;
+		$table = self::get_table_name();
+
+		$wpdb->query( "DELETE FROM $table" );
+
+		$count = 0;
+		foreach ( $items as $data ) {
+			$result = self::add_item( $data );
+			if ( ! is_wp_error( $result ) ) {
+				$count++;
+			}
+		}
+		return $count;
+	}
+
 	public static function get_item_by_id( $id ) {
 		global $wpdb;
 		$table = self::get_table_name();

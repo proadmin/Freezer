@@ -55,6 +55,9 @@ The item is automatically deleted from the inventory.
 
 == Changelog ==
 
+= 1.0.2 =
+* Added build-zip.sh script for auto-incrementing version and rebuilding zip
+
 = 1.0.1 =
 * Replaced card layout with editable spreadsheet-style table
 * Inline editing: click any cell to edit, Tab/Enter/Escape navigation
