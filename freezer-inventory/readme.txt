@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 2.0.6
+Stable tag: 2.0.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,12 +14,12 @@ Manage your freezer inventory with an editable spreadsheet table, categories, ma
 
 Freezer Inventory Manager lets you:
 
-* Add items with name, category, quantity, unit, location (freezer/shelf/bin), date, and notes
+* Add items with name, category, quantity, unit, raw/cooked, location (freezer/shelf/bin), date, and notes
 * Edit any field directly in the inventory table (click a cell to edit, like a spreadsheet)
 * Editable date field with inline date picker
 * Navigate between cells with Tab, Enter, and Escape keys
 * Items are automatically removed when quantity reaches zero
-* Search and filter by name, category, freezer, shelf, and bin
+* Search and filter by name, category, freezer, shelf, bin, and raw/cooked
 * Manage freezers, locations, and item names from dedicated admin pages
 * Item name autocomplete dropdown that learns new names as you add items
 * Cascading location dropdowns (freezer → shelf → bin); bin is optional
@@ -68,6 +68,10 @@ The item is automatically deleted from the inventory.
 You can delete them from their respective admin pages, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 2.0.7 =
+* Added Raw / Cooked (preparation) field — required on add form, filterable, inline-editable
+* Preparation column included in CSV export/import, PDF, and example CSV
 
 = 2.0.6 =
 * Moved CSV import/export to a dedicated admin page with column documentation and downloadable example CSV

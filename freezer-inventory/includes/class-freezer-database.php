@@ -47,6 +47,7 @@ class Freezer_Database {
 			unit varchar(50) NOT NULL,
 			location varchar(100) NOT NULL,
 			location_id bigint(20) unsigned DEFAULT NULL,
+			preparation varchar(20) NOT NULL DEFAULT '',
 			date_added datetime NOT NULL,
 			notes text,
 			PRIMARY KEY (id),
@@ -513,7 +514,7 @@ class Freezer_Database {
 			$values[] = '%' . $wpdb->esc_like( strtolower( $args['search'] ) ) . '%';
 		}
 
-		$sql = "SELECT i.id, i.name, i.category, i.quantity, i.unit, i.location, i.location_id, i.date_added, i.notes,
+		$sql = "SELECT i.id, i.name, i.category, i.quantity, i.unit, i.location, i.location_id, i.preparation, i.date_added, i.notes,
 				COALESCE(l.freezer, '') AS freezer, COALESCE(l.shelf, '') AS shelf, COALESCE(l.bin, '') AS bin
 				FROM $table i LEFT JOIN $loc_table l ON i.location_id = l.id
 				WHERE " . implode( ' AND ', $where ) . " ORDER BY i.date_added DESC";
@@ -554,7 +555,8 @@ class Freezer_Database {
 		$category = sanitize_text_field( $data['category'] ?? '' );
 		$quantity = (float) ( $data['quantity'] ?? 0 );
 		$unit     = sanitize_text_field( $data['unit'] ?? '' );
-		$notes    = sanitize_textarea_field( $data['notes'] ?? '' );
+		$notes       = sanitize_textarea_field( $data['notes'] ?? '' );
+		$preparation = sanitize_text_field( $data['preparation'] ?? '' );
 
 		// Resolve location_id.
 		$location_id = null;
@@ -584,16 +586,17 @@ class Freezer_Database {
 		}
 
 		$insert = array(
-			'id'         => $id,
-			'name'       => $name,
-			'category'   => $category,
-			'quantity'   => $quantity,
-			'unit'       => $unit,
-			'location'   => $location,
-			'date_added' => $date,
-			'notes'      => $notes,
+			'id'          => $id,
+			'name'        => $name,
+			'category'    => $category,
+			'quantity'    => $quantity,
+			'unit'        => $unit,
+			'location'    => $location,
+			'preparation' => $preparation,
+			'date_added'  => $date,
+			'notes'       => $notes,
 		);
-		$formats = array( '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s' );
+		$formats = array( '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%s' );
 		if ( $location_id ) {
 			$insert['location_id'] = $location_id;
 			$formats[]             = '%d';
@@ -637,7 +640,7 @@ class Freezer_Database {
 		global $wpdb;
 		$table   = self::get_table_name();
 		$id      = sanitize_text_field( $id );
-		$allowed = array( 'name', 'category', 'quantity', 'unit', 'location', 'notes', 'date_added' );
+		$allowed = array( 'name', 'category', 'quantity', 'unit', 'location', 'preparation', 'notes', 'date_added' );
 		$update  = array();
 		$formats = array();
 		foreach ( $allowed as $key ) {
@@ -704,7 +707,7 @@ class Freezer_Database {
 		$table     = self::get_table_name();
 		$loc_table = self::get_locations_table_name();
 		$row = $wpdb->get_row( $wpdb->prepare(
-			"SELECT i.id, i.name, i.category, i.quantity, i.unit, i.location, i.location_id, i.date_added, i.notes,
+			"SELECT i.id, i.name, i.category, i.quantity, i.unit, i.location, i.location_id, i.preparation, i.date_added, i.notes,
 			 COALESCE(l.freezer, '') AS freezer, COALESCE(l.shelf, '') AS shelf, COALESCE(l.bin, '') AS bin
 			 FROM $table i LEFT JOIN $loc_table l ON i.location_id = l.id
 			 WHERE i.id = %s", $id

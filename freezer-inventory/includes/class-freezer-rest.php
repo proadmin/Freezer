@@ -34,6 +34,7 @@ class Freezer_Rest {
 					'location_id'  => array( 'type' => 'integer', 'required' => false ),
 					'freezer_zone' => array( 'type' => 'string', 'required' => false ),
 					'location'     => array( 'type' => 'string', 'required' => false ),
+					'preparation'  => array( 'type' => 'string', 'required' => false ),
 					'notes'        => array( 'type' => 'string', 'required' => false ),
 					'date_added'   => array( 'type' => 'string', 'required' => false ),
 					'freezer'      => array( 'type' => 'string', 'required' => false ),
@@ -62,6 +63,7 @@ class Freezer_Rest {
 					'location'     => array( 'type' => 'string' ),
 					'location_id'  => array( 'type' => 'integer' ),
 					'freezer_zone' => array( 'type' => 'string' ),
+					'preparation'  => array( 'type' => 'string' ),
 					'notes'        => array( 'type' => 'string' ),
 					'date_added'   => array( 'type' => 'string' ),
 				),
@@ -249,8 +251,8 @@ class Freezer_Rest {
 			}
 			$item = array_combine( $header, $row );
 			// Resolve location_id from freezer/shelf/bin columns.
-			if ( ! empty( $item['freezer'] ) && ! empty( $item['shelf'] ) && ! empty( $item['bin'] ) ) {
-				$loc_id = Freezer_Database::find_or_create_location( $item['freezer'], $item['shelf'], $item['bin'] );
+			if ( ! empty( $item['freezer'] ) && ! empty( $item['shelf'] ) ) {
+				$loc_id = Freezer_Database::find_or_create_location( $item['freezer'], $item['shelf'], $item['bin'] ?? '' );
 				if ( $loc_id ) {
 					$item['location_id'] = $loc_id;
 				}
@@ -274,7 +276,7 @@ class Freezer_Rest {
 	public static function export_csv( $request ) {
 		$items  = Freezer_Database::get_items( array() );
 		$output = fopen( 'php://temp', 'r+' );
-		fputcsv( $output, array( 'Name', 'Category', 'Quantity', 'Unit', 'Freezer', 'Shelf', 'Bin', 'Date Added', 'Notes' ) );
+		fputcsv( $output, array( 'Name', 'Category', 'Quantity', 'Unit', 'Freezer', 'Shelf', 'Bin', 'Preparation', 'Date Added', 'Notes' ) );
 		foreach ( $items as $item ) {
 			fputcsv( $output, array(
 				$item['name'],
@@ -284,6 +286,7 @@ class Freezer_Rest {
 				$item['freezer'] ?? '',
 				$item['shelf'] ?? '',
 				$item['bin'] ?? '',
+				$item['preparation'] ?? '',
 				$item['date_added'],
 				$item['notes'] ?? '',
 			) );

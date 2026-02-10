@@ -9,6 +9,7 @@
 
     var CATEGORIES = ['Meat', 'Vegetables', 'Fruits', 'Prepared Meals', 'Dairy', 'Bread', 'Other'];
     var UNITS = ['lbs', 'oz', 'pieces', 'bags', 'containers', 'packages'];
+    var PREPARATIONS = ['Raw', 'Cooked'];
 
     function headers() {
         var h = { 'Content-Type': 'application/json' };
@@ -87,6 +88,7 @@
     var freezerFilter = document.getElementById('freezerFilter');
     var shelfFilter = document.getElementById('shelfFilter');
     var binFilter = document.getElementById('binFilter');
+    var preparationFilter = document.getElementById('preparationFilter');
     var clearFiltersBtn = document.getElementById('clearFilters');
     var inventoryStats = document.getElementById('inventoryStats');
     var downloadPdfBtn = document.getElementById('downloadPdfBtn');
@@ -116,6 +118,7 @@
             applyFilters();
         });
         if (binFilter) binFilter.addEventListener('change', applyFilters);
+        if (preparationFilter) preparationFilter.addEventListener('change', applyFilters);
         if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', clearFilters);
         if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', handleDownloadPdf);
         if (downloadCsvBtn) downloadCsvBtn.addEventListener('click', handleDownloadCsv);
@@ -310,6 +313,7 @@
             category: formData.get('category'),
             quantity: parseFloat(formData.get('quantity')),
             unit: formData.get('unit'),
+            preparation: formData.get('preparation') || '',
             date_added: formData.get('date_added') || '',
             notes: formData.get('notes') || ''
         };
@@ -410,6 +414,7 @@
         var freezerValue = freezerFilter ? freezerFilter.value : '';
         var shelfValue = shelfFilter ? shelfFilter.value : '';
         var binValue = binFilter ? binFilter.value : '';
+        var preparationValue = preparationFilter ? preparationFilter.value : '';
 
         filteredItems = allItems.filter(function(item) {
             var matchSearch = !searchQuery || (item.name || '').toLowerCase().indexOf(searchQuery) !== -1;
@@ -417,7 +422,8 @@
             var matchFreezer = !freezerValue || item.freezer === freezerValue;
             var matchShelf = !shelfValue || item.shelf === shelfValue;
             var matchBin = !binValue || item.bin === binValue;
-            return matchSearch && matchCategory && matchFreezer && matchShelf && matchBin;
+            var matchPreparation = !preparationValue || item.preparation === preparationValue;
+            return matchSearch && matchCategory && matchFreezer && matchShelf && matchBin && matchPreparation;
         });
         renderInventory();
         updateStats();
@@ -429,6 +435,7 @@
         if (freezerFilter) freezerFilter.value = '';
         if (shelfFilter) shelfFilter.value = '';
         if (binFilter) binFilter.value = '';
+        if (preparationFilter) preparationFilter.value = '';
         populateFilterShelves();
         populateFilterBins();
         applyFilters();
@@ -517,6 +524,15 @@
                 opt.value = u;
                 opt.textContent = u;
                 if (u === currentValue) opt.selected = true;
+                input.appendChild(opt);
+            });
+        } else if (type === 'select-preparation') {
+            input = document.createElement('select');
+            PREPARATIONS.forEach(function(p) {
+                var opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                if (p === currentValue) opt.selected = true;
                 input.appendChild(opt);
             });
         } else if (type === 'number') {
@@ -800,6 +816,11 @@
         makeEditable(tdUnit, item, 'unit', 'select-unit');
         tr.appendChild(tdUnit);
 
+        var tdPrep = document.createElement('td');
+        tdPrep.textContent = item.preparation || '';
+        makeEditable(tdPrep, item, 'preparation', 'select-preparation');
+        tr.appendChild(tdPrep);
+
         var tdLoc = document.createElement('td');
         tdLoc.textContent = locationLabel(item);
         makeEditable(tdLoc, item, 'location_id', 'select-location-cascade');
@@ -828,7 +849,7 @@
         if (filteredItems.length === 0) {
             var tr = document.createElement('tr');
             var td = document.createElement('td');
-            td.colSpan = 7;
+            td.colSpan = 8;
             td.className = 'empty-message';
             td.textContent = allItems.length === 0 ? 'No items in freezer. Add your first item above!' : 'No items found. Try adjusting your filters.';
             tr.appendChild(td);

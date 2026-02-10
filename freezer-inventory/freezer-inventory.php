@@ -3,7 +3,7 @@
  * Plugin Name: Freezer Inventory Manager
  * Plugin URI: https://github.com/your-repo/freezer-inventory
  * Description: Manage your freezer inventory with categories, locations, partial quantities, and PDF export.
- * Version: 2.0.6
+ * Version: 2.0.7
  * Author: Freezer Inventory
  * Author URI: ''
  * License: GPL v2 or later
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FREEZER_INVENTORY_VERSION', '2.0.6' );
+define( 'FREEZER_INVENTORY_VERSION', '2.0.7' );
 define( 'FREEZER_INVENTORY_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FREEZER_INVENTORY_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -33,12 +33,12 @@ register_activation_hook( __FILE__, function() {
 // Upgrade existing installs.
 add_action( 'plugins_loaded', function() {
 	$installed = get_option( 'freezer_inventory_db_version', '0' );
-	if ( version_compare( $installed, '2.2.0', '<' ) ) {
+	if ( version_compare( $installed, '2.3.0', '<' ) ) {
 		Freezer_Database::create_table();
 		Freezer_Database::migrate_locations();
 		Freezer_Database::migrate_freezers();
 		Freezer_Database::migrate_item_names();
-		update_option( 'freezer_inventory_db_version', '2.2.0' );
+		update_option( 'freezer_inventory_db_version', '2.3.0' );
 	}
 } );
 

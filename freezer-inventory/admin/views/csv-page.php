@@ -37,6 +37,7 @@ $example_csv_url = FREEZER_INVENTORY_PLUGIN_URL . 'admin/example-import.csv';
                             <tr><td><code>Freezer</code></td><td>Yes</td><td>Freezer name (e.g., Main Freezer)</td></tr>
                             <tr><td><code>Shelf</code></td><td>Yes</td><td>Shelf name (e.g., Shelf 1)</td></tr>
                             <tr><td><code>Bin</code></td><td>No</td><td>Bin name (e.g., Bin 1). Leave blank if not applicable.</td></tr>
+                            <tr><td><code>Preparation</code></td><td>No</td><td>Raw or Cooked</td></tr>
                             <tr><td><code>Date Added</code></td><td>No</td><td>Date in YYYY-MM-DD format. Defaults to today if omitted.</td></tr>
                             <tr><td><code>Notes</code></td><td>No</td><td>Any additional notes</td></tr>
                         </tbody>

@@ -235,6 +235,7 @@ class Freezer_Admin {
 						<th>Freezer</th>
 						<th>Shelf</th>
 						<th>Bin</th>
+						<th>Raw / Cooked</th>
 						<th>Date Added</th>
 					</tr>
 				</thead>
@@ -248,6 +249,7 @@ class Freezer_Admin {
 							<td><?php echo esc_html( $item['freezer'] ?? '' ); ?></td>
 							<td><?php echo esc_html( $item['shelf'] ?? '' ); ?></td>
 							<td><?php echo esc_html( $item['bin'] ?? '' ); ?></td>
+							<td><?php echo esc_html( $item['preparation'] ?? '' ); ?></td>
 							<td><?php echo esc_html( date( 'Y-m-d', strtotime( $item['date_added'] ) ) ); ?></td>
 						</tr>
 					<?php endforeach; ?>
