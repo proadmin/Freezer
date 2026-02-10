@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,10 @@ Click any cell in the inventory table to edit it in place. Use Tab to move betwe
 The item is automatically deleted from the inventory.
 
 == Changelog ==
+
+= 1.0.3 =
+* Added CSV import to replace all inventory items
+* Confirmation prompt warns before overwriting existing data
 
 = 1.0.2 =
 * Added build-zip.sh script for auto-incrementing version and rebuilding zip

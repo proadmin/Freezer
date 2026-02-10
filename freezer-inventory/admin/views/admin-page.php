@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 <div class="freezer-inventory-wrap">
     <div class="freezer-inventory-container">
         <header class="freezer-inventory-header">
-            <h1>🧊 Freezer Inventory Manager</h1>
+            <h1>Freezer Inventory Manager</h1>
             <p class="subtitle">Keep track of what's in your freezer</p>
         </header>
 
@@ -15,7 +15,8 @@ defined( 'ABSPATH' ) || exit;
                     <div class="form-row">
                         <div class="form-group">
                             <label for="itemName">Item Name *</label>
-                            <input type="text" id="itemName" name="name" required placeholder="e.g., Chicken Breast">
+                            <input type="text" id="itemName" name="name" list="itemNameList" required placeholder="e.g., Chicken Breast">
+                            <datalist id="itemNameList"></datalist>
                         </div>
                         <div class="form-group">
                             <label for="itemCategory">Category *</label>
@@ -48,13 +49,25 @@ defined( 'ABSPATH' ) || exit;
                                 <option value="packages">packages</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="itemLocation">Location *</label>
-                            <select id="itemLocation" name="freezer_zone" required>
-                                <option value="">Select location</option>
-                                <?php foreach ( $locations as $loc ) : ?>
-                                    <option value="<?php echo esc_attr( $loc ); ?>"><?php echo esc_html( $loc ); ?></option>
-                                <?php endforeach; ?>
+                            <label for="itemFreezer">Freezer *</label>
+                            <select id="itemFreezer" required>
+                                <option value="">Select freezer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemShelf">Shelf *</label>
+                            <select id="itemShelf" required>
+                                <option value="">Select shelf</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemBin">Bin *</label>
+                            <select id="itemBin" required>
+                                <option value="">Select bin</option>
                             </select>
                         </div>
                     </div>
@@ -82,9 +95,21 @@ defined( 'ABSPATH' ) || exit;
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="zoneFilter">Location:</label>
-                        <select id="zoneFilter">
-                            <option value="">All Locations</option>
+                        <label for="freezerFilter">Freezer:</label>
+                        <select id="freezerFilter">
+                            <option value="">All Freezers</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="shelfFilter">Shelf:</label>
+                        <select id="shelfFilter">
+                            <option value="">All Shelves</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="binFilter">Bin:</label>
+                        <select id="binFilter">
+                            <option value="">All Bins</option>
                         </select>
                     </div>
                     <button id="clearFilters" class="btn btn-secondary">Clear Filters</button>
@@ -95,6 +120,7 @@ defined( 'ABSPATH' ) || exit;
                 <div class="inventory-header">
                     <div id="inventoryStats" class="stats"></div>
                     <button type="button" id="downloadPdfBtn" class="btn btn-pdf">Download PDF</button>
+                    <button type="button" id="downloadCsvBtn" class="btn btn-csv">Export CSV</button>
                     <label class="btn btn-import" for="csvFileInput">Import CSV</label>
                     <input type="file" id="csvFileInput" accept=".csv" style="display:none">
                 </div>

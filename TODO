@@ -1,0 +1,4 @@
+- Remove View Frontend button
+- Make the Freezer field a drop-down. Add the ability in the backend to add and delete Freezers.
+- Include existing Item Names from the database in a drop-down for Item Name on the form. Item Name should still be able to be manually edited. Selecting from the dropdown is optional. New entries should be automatically added to the drop-down. Generate a backend function to edit the item name list including the ability to add and delete item names. Do not allow item names to be deleted if there is anything in inventory using that name. 
+

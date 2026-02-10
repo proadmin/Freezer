@@ -4,6 +4,7 @@
     var API_BASE = typeof freezerInventory !== 'undefined' ? freezerInventory.restUrl : '';
     var NONCE = typeof freezerInventory !== 'undefined' ? freezerInventory.nonce : '';
     var LOCATIONS = typeof freezerInventory !== 'undefined' ? freezerInventory.locations : [];
+    var ITEM_NAMES = typeof freezerInventory !== 'undefined' ? freezerInventory.itemNames : [];
 
     var CATEGORIES = ['Meat', 'Vegetables', 'Fruits', 'Prepared Meals', 'Dairy', 'Bread', 'Other'];
     var UNITS = ['lbs', 'oz', 'pieces', 'bags', 'containers', 'packages'];
@@ -14,29 +15,253 @@
         return h;
     }
 
+    // --- Location cascade helpers ---
+
+    function getUniqueFreezers() {
+        var seen = {};
+        var result = [];
+        LOCATIONS.forEach(function(loc) {
+            if (!seen[loc.freezer]) {
+                seen[loc.freezer] = true;
+                result.push(loc.freezer);
+            }
+        });
+        return result.sort();
+    }
+
+    function getShelvesForFreezer(freezer) {
+        var seen = {};
+        var result = [];
+        LOCATIONS.forEach(function(loc) {
+            if (loc.freezer === freezer && !seen[loc.shelf]) {
+                seen[loc.shelf] = true;
+                result.push(loc.shelf);
+            }
+        });
+        return result.sort();
+    }
+
+    function getBinsForFreezerShelf(freezer, shelf) {
+        var seen = {};
+        var result = [];
+        LOCATIONS.forEach(function(loc) {
+            if (loc.freezer === freezer && loc.shelf === shelf && !seen[loc.bin]) {
+                seen[loc.bin] = true;
+                result.push(loc.bin);
+            }
+        });
+        return result.sort();
+    }
+
+    function getLocationId(freezer, shelf, bin) {
+        for (var i = 0; i < LOCATIONS.length; i++) {
+            if (LOCATIONS[i].freezer === freezer && LOCATIONS[i].shelf === shelf && LOCATIONS[i].bin === bin) {
+                return LOCATIONS[i].id;
+            }
+        }
+        return null;
+    }
+
+    function getLocationById(id) {
+        for (var i = 0; i < LOCATIONS.length; i++) {
+            if (LOCATIONS[i].id == id) return LOCATIONS[i];
+        }
+        return null;
+    }
+
+    function locationLabel(item) {
+        var parts = [];
+        if (item.freezer) parts.push(item.freezer);
+        if (item.shelf) parts.push(item.shelf);
+        if (item.bin) parts.push(item.bin);
+        return parts.join(' / ') || '';
+    }
+
+    // --- DOM refs ---
+
     var addItemForm = document.getElementById('addItemForm');
     var inventoryBody = document.getElementById('inventoryBody');
     var searchInput = document.getElementById('searchInput');
     var categoryFilter = document.getElementById('categoryFilter');
-    var zoneFilter = document.getElementById('zoneFilter');
+    var freezerFilter = document.getElementById('freezerFilter');
+    var shelfFilter = document.getElementById('shelfFilter');
+    var binFilter = document.getElementById('binFilter');
     var clearFiltersBtn = document.getElementById('clearFilters');
     var inventoryStats = document.getElementById('inventoryStats');
     var downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    var downloadCsvBtn = document.getElementById('downloadCsvBtn');
     var csvFileInput = document.getElementById('csvFileInput');
+
+    var itemFreezer = document.getElementById('itemFreezer');
+    var itemShelf = document.getElementById('itemShelf');
+    var itemBin = document.getElementById('itemBin');
 
     var allItems = [];
     var filteredItems = [];
-    var editingCell = null; // track currently editing cell to avoid duplicates
+    var editingCell = null;
 
     function setupEventListeners() {
         if (addItemForm) addItemForm.addEventListener('submit', handleAddItem);
         if (searchInput) searchInput.addEventListener('input', applyFilters);
         if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
-        if (zoneFilter) zoneFilter.addEventListener('change', applyFilters);
+        if (freezerFilter) freezerFilter.addEventListener('change', function() {
+            populateFilterShelves();
+            populateFilterBins();
+            applyFilters();
+        });
+        if (shelfFilter) shelfFilter.addEventListener('change', function() {
+            populateFilterBins();
+            applyFilters();
+        });
+        if (binFilter) binFilter.addEventListener('change', applyFilters);
         if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', clearFilters);
         if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', handleDownloadPdf);
+        if (downloadCsvBtn) downloadCsvBtn.addEventListener('click', handleDownloadCsv);
         if (csvFileInput) csvFileInput.addEventListener('change', handleCsvImport);
+
+        // Cascade for add form
+        if (itemFreezer) {
+            populateAddFreezers();
+            itemFreezer.addEventListener('change', function() {
+                populateAddShelves();
+                populateAddBins();
+            });
+        }
+        if (itemShelf) {
+            itemShelf.addEventListener('change', function() {
+                populateAddBins();
+            });
+        }
+
+        populateItemNameList();
     }
+
+    // --- Item name datalist ---
+
+    function populateItemNameList() {
+        var datalist = document.getElementById('itemNameList');
+        if (!datalist) return;
+        datalist.innerHTML = '';
+        ITEM_NAMES.forEach(function(n) {
+            var opt = document.createElement('option');
+            opt.value = n.name;
+            datalist.appendChild(opt);
+        });
+    }
+
+    function refreshItemNames() {
+        fetch(API_BASE + '/item-names', { headers: headers() })
+            .then(function(r) { return r.ok ? r.json() : []; })
+            .then(function(data) {
+                ITEM_NAMES = data;
+                populateItemNameList();
+            })
+            .catch(function() {});
+    }
+
+    // --- Add form cascade ---
+
+    function populateAddFreezers() {
+        if (!itemFreezer) return;
+        itemFreezer.innerHTML = '<option value="">Select freezer</option>';
+        getUniqueFreezers().forEach(function(f) {
+            var opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            itemFreezer.appendChild(opt);
+        });
+        populateAddShelves();
+    }
+
+    function populateAddShelves() {
+        if (!itemShelf) return;
+        itemShelf.innerHTML = '<option value="">Select shelf</option>';
+        var freezer = itemFreezer ? itemFreezer.value : '';
+        if (!freezer) return;
+        getShelvesForFreezer(freezer).forEach(function(s) {
+            var opt = document.createElement('option');
+            opt.value = s;
+            opt.textContent = s;
+            itemShelf.appendChild(opt);
+        });
+        populateAddBins();
+    }
+
+    function populateAddBins() {
+        if (!itemBin) return;
+        itemBin.innerHTML = '<option value="">Select bin</option>';
+        var freezer = itemFreezer ? itemFreezer.value : '';
+        var shelf = itemShelf ? itemShelf.value : '';
+        if (!freezer || !shelf) return;
+        getBinsForFreezerShelf(freezer, shelf).forEach(function(b) {
+            var opt = document.createElement('option');
+            opt.value = b;
+            opt.textContent = b;
+            itemBin.appendChild(opt);
+        });
+    }
+
+    // --- Filter cascade ---
+
+    function populateFilterFreezers() {
+        if (!freezerFilter) return;
+        var val = freezerFilter.value;
+        freezerFilter.innerHTML = '<option value="">All Freezers</option>';
+        var freezers = {};
+        allItems.forEach(function(item) {
+            if (item.freezer) freezers[item.freezer] = true;
+        });
+        Object.keys(freezers).sort().forEach(function(f) {
+            var opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            freezerFilter.appendChild(opt);
+        });
+        freezerFilter.value = val;
+    }
+
+    function populateFilterShelves() {
+        if (!shelfFilter) return;
+        var val = shelfFilter.value;
+        shelfFilter.innerHTML = '<option value="">All Shelves</option>';
+        var freezer = freezerFilter ? freezerFilter.value : '';
+        var shelves = {};
+        allItems.forEach(function(item) {
+            if (item.shelf && (!freezer || item.freezer === freezer)) {
+                shelves[item.shelf] = true;
+            }
+        });
+        Object.keys(shelves).sort().forEach(function(s) {
+            var opt = document.createElement('option');
+            opt.value = s;
+            opt.textContent = s;
+            shelfFilter.appendChild(opt);
+        });
+        shelfFilter.value = val;
+    }
+
+    function populateFilterBins() {
+        if (!binFilter) return;
+        var val = binFilter.value;
+        binFilter.innerHTML = '<option value="">All Bins</option>';
+        var freezer = freezerFilter ? freezerFilter.value : '';
+        var shelf = shelfFilter ? shelfFilter.value : '';
+        var bins = {};
+        allItems.forEach(function(item) {
+            if (item.bin && (!freezer || item.freezer === freezer) && (!shelf || item.shelf === shelf)) {
+                bins[item.bin] = true;
+            }
+        });
+        Object.keys(bins).sort().forEach(function(b) {
+            var opt = document.createElement('option');
+            opt.value = b;
+            opt.textContent = b;
+            binFilter.appendChild(opt);
+        });
+        binFilter.value = val;
+    }
+
+    // --- Data ---
 
     function loadInventory() {
         fetch(API_BASE + '/items', { headers: headers() })
@@ -56,18 +281,35 @@
     function handleAddItem(e) {
         e.preventDefault();
         var formData = new FormData(addItemForm);
+        var freezer = itemFreezer ? itemFreezer.value : '';
+        var shelf = itemShelf ? itemShelf.value : '';
+        var bin = itemBin ? itemBin.value : '';
+
+        if (!freezer || !shelf || !bin) {
+            showError('Please select a Freezer, Shelf, and Bin.');
+            return;
+        }
+
+        var locId = getLocationId(freezer, shelf, bin);
+        if (!locId) {
+            showError('Invalid location selected.');
+            return;
+        }
+
         var itemData = {
             name: formData.get('name'),
             category: formData.get('category'),
             quantity: parseFloat(formData.get('quantity')),
             unit: formData.get('unit'),
-            freezer_zone: formData.get('freezer_zone'),
+            location_id: locId,
             notes: formData.get('notes') || ''
         };
-        if (!itemData.name || !itemData.category || !itemData.freezer_zone) {
-            showError('Please fill in all required fields (including Location).');
+
+        if (!itemData.name || !itemData.category) {
+            showError('Please fill in all required fields.');
             return;
         }
+
         fetch(API_BASE + '/items', {
             method: 'POST',
             headers: headers(),
@@ -79,10 +321,12 @@
                 allItems.unshift(res.json);
                 filteredItems = allItems.slice();
                 addItemForm.reset();
+                populateAddFreezers();
                 updateFilters();
                 applyFilters();
                 updateStats();
                 showSuccess('Item added successfully!');
+                refreshItemNames();
             })
             .catch(function(err) {
                 showError('Failed to add item: ' + err.message);
@@ -104,7 +348,6 @@
     }
 
     function saveField(itemId, field, value) {
-        // Auto-delete when quantity reaches 0
         if (field === 'quantity' && value <= 0) {
             removeItem(itemId);
             return Promise.resolve();
@@ -113,7 +356,6 @@
         var data = {};
         data[field] = value;
 
-        // Update local state optimistically
         var item = allItems.find(function(i) { return i.id === itemId; });
         if (!item) return Promise.reject(new Error('Item not found'));
         var oldValue = item[field];
@@ -129,12 +371,10 @@
             .then(function(r) { return r.json().then(function(j) { return { ok: r.ok, json: j }; }); })
             .then(function(res) {
                 if (!res.ok) {
-                    // Revert on failure
                     item[field] = oldValue;
                     if (fItem) fItem[field] = oldValue;
                     throw new Error(res.json.error || 'Failed to update');
                 }
-                // Sync full item from server
                 var idx = allItems.findIndex(function(i) { return i.id === itemId; });
                 if (idx !== -1) allItems[idx] = res.json;
                 var fidx = filteredItems.findIndex(function(i) { return i.id === itemId; });
@@ -150,12 +390,17 @@
     function applyFilters() {
         var searchQuery = (searchInput && searchInput.value || '').toLowerCase().trim();
         var categoryValue = categoryFilter ? categoryFilter.value : '';
-        var zoneValue = zoneFilter ? zoneFilter.value : '';
+        var freezerValue = freezerFilter ? freezerFilter.value : '';
+        var shelfValue = shelfFilter ? shelfFilter.value : '';
+        var binValue = binFilter ? binFilter.value : '';
+
         filteredItems = allItems.filter(function(item) {
             var matchSearch = !searchQuery || (item.name || '').toLowerCase().indexOf(searchQuery) !== -1;
             var matchCategory = !categoryValue || item.category === categoryValue;
-            var matchZone = !zoneValue || item.freezer_zone === zoneValue;
-            return matchSearch && matchCategory && matchZone;
+            var matchFreezer = !freezerValue || item.freezer === freezerValue;
+            var matchShelf = !shelfValue || item.shelf === shelfValue;
+            var matchBin = !binValue || item.bin === binValue;
+            return matchSearch && matchCategory && matchFreezer && matchShelf && matchBin;
         });
         renderInventory();
         updateStats();
@@ -164,7 +409,11 @@
     function clearFilters() {
         if (searchInput) searchInput.value = '';
         if (categoryFilter) categoryFilter.value = '';
-        if (zoneFilter) zoneFilter.value = '';
+        if (freezerFilter) freezerFilter.value = '';
+        if (shelfFilter) shelfFilter.value = '';
+        if (binFilter) binFilter.value = '';
+        populateFilterShelves();
+        populateFilterBins();
         applyFilters();
     }
 
@@ -183,20 +432,9 @@
                 categoryFilter.appendChild(opt);
             });
         }
-        var zones = [];
-        allItems.forEach(function(item) {
-            if (item.freezer_zone && zones.indexOf(item.freezer_zone) === -1) zones.push(item.freezer_zone);
-        });
-        zones.sort();
-        if (zoneFilter) {
-            zoneFilter.innerHTML = '<option value="">All Locations</option>';
-            zones.forEach(function(zone) {
-                var opt = document.createElement('option');
-                opt.value = zone;
-                opt.textContent = zone;
-                zoneFilter.appendChild(opt);
-            });
-        }
+        populateFilterFreezers();
+        populateFilterShelves();
+        populateFilterBins();
     }
 
     function escapeHtml(text) {
@@ -206,7 +444,7 @@
         return div.innerHTML;
     }
 
-    // --- Inline editing helpers ---
+    // --- Inline editing ---
 
     function makeEditable(td, item, field, type) {
         td.classList.add('editable-cell');
@@ -216,20 +454,22 @@
     }
 
     function startEditing(td, item, field, type) {
-        // Don't re-enter if already editing this cell
-        if (td.querySelector('input, select')) return;
-
-        // If another cell is being edited, commit it first
+        if (td.querySelector('input, select, .cascade-editor')) return;
         if (editingCell && editingCell !== td) {
             commitEdit(editingCell);
         }
-
         editingCell = td;
-        var currentValue = item[field];
         td.classList.add('editing');
         td.innerHTML = '';
 
+        if (type === 'select-location-cascade') {
+            startLocationCascadeEdit(td, item);
+            return;
+        }
+
+        var currentValue = item[field];
         var input;
+
         if (type === 'select-category') {
             input = document.createElement('select');
             CATEGORIES.forEach(function(cat) {
@@ -246,15 +486,6 @@
                 opt.value = u;
                 opt.textContent = u;
                 if (u === currentValue) opt.selected = true;
-                input.appendChild(opt);
-            });
-        } else if (type === 'select-location') {
-            input = document.createElement('select');
-            LOCATIONS.forEach(function(loc) {
-                var opt = document.createElement('option');
-                opt.value = loc;
-                opt.textContent = loc;
-                if (loc === currentValue) opt.selected = true;
                 input.appendChild(opt);
             });
         } else if (type === 'number') {
@@ -282,7 +513,6 @@
             if (e.key === 'Enter') {
                 e.preventDefault();
                 commitEdit(td);
-                // Move to next editable row same column
                 var tr = td.parentElement;
                 var nextRow = tr.nextElementSibling;
                 if (nextRow) {
@@ -297,18 +527,14 @@
             } else if (e.key === 'Tab') {
                 e.preventDefault();
                 commitEdit(td);
-                // Move to next editable cell in the row
                 var cells = td.parentElement.querySelectorAll('.editable-cell');
                 var cellArr = Array.prototype.slice.call(cells);
                 var curIdx = cellArr.indexOf(td);
                 var nextCell = e.shiftKey ? cellArr[curIdx - 1] : cellArr[curIdx + 1];
-                if (nextCell) {
-                    nextCell.click();
-                }
+                if (nextCell) nextCell.click();
             }
         });
 
-        // For selects, commit on change
         if (input.tagName === 'SELECT') {
             input.addEventListener('change', function() {
                 commitEdit(td);
@@ -316,16 +542,149 @@
         }
 
         input.addEventListener('blur', function() {
-            // Small delay to allow click events on other cells to fire first
             setTimeout(function() {
-                if (editingCell === td) {
-                    commitEdit(td);
-                }
+                if (editingCell === td) commitEdit(td);
             }, 100);
         });
     }
 
+    function startLocationCascadeEdit(td, item) {
+        var container = document.createElement('div');
+        container.className = 'cascade-editor';
+        container.dataset.itemId = item.id;
+        container.dataset.originalLocationId = item.location_id || '';
+
+        var selF = document.createElement('select');
+        selF.className = 'cell-editor';
+        selF.innerHTML = '<option value="">Freezer</option>';
+        getUniqueFreezers().forEach(function(f) {
+            var opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            if (f === item.freezer) opt.selected = true;
+            selF.appendChild(opt);
+        });
+
+        var selS = document.createElement('select');
+        selS.className = 'cell-editor';
+
+        var selB = document.createElement('select');
+        selB.className = 'cell-editor';
+
+        function populateShelves() {
+            selS.innerHTML = '<option value="">Shelf</option>';
+            var freezer = selF.value;
+            if (!freezer) return;
+            getShelvesForFreezer(freezer).forEach(function(s) {
+                var opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s;
+                if (s === item.shelf && freezer === item.freezer) opt.selected = true;
+                selS.appendChild(opt);
+            });
+        }
+
+        function populateBins() {
+            selB.innerHTML = '<option value="">Bin</option>';
+            var freezer = selF.value;
+            var shelf = selS.value;
+            if (!freezer || !shelf) return;
+            getBinsForFreezerShelf(freezer, shelf).forEach(function(b) {
+                var opt = document.createElement('option');
+                opt.value = b;
+                opt.textContent = b;
+                if (b === item.bin && freezer === item.freezer && shelf === item.shelf) opt.selected = true;
+                selB.appendChild(opt);
+            });
+        }
+
+        populateShelves();
+        populateBins();
+
+        selF.addEventListener('change', function() {
+            populateShelves();
+            populateBins();
+        });
+        selS.addEventListener('change', function() {
+            populateBins();
+        });
+        selB.addEventListener('change', function() {
+            var locId = getLocationId(selF.value, selS.value, selB.value);
+            if (locId) commitLocationEdit(td, item, locId);
+        });
+
+        container.appendChild(selF);
+        container.appendChild(selS);
+        container.appendChild(selB);
+        td.appendChild(container);
+        selF.focus();
+
+        container.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cancelEdit(td, item, 'location_id', 'select-location-cascade');
+            }
+        });
+
+        var blurTimeout;
+        function handleBlur() {
+            clearTimeout(blurTimeout);
+            blurTimeout = setTimeout(function() {
+                if (editingCell === td) {
+                    var active = document.activeElement;
+                    if (active && container.contains(active)) return;
+                    var locId = getLocationId(selF.value, selS.value, selB.value);
+                    if (locId) {
+                        commitLocationEdit(td, item, locId);
+                    } else {
+                        cancelEdit(td, item, 'location_id', 'select-location-cascade');
+                    }
+                }
+            }, 150);
+        }
+        selF.addEventListener('blur', handleBlur);
+        selS.addEventListener('blur', handleBlur);
+        selB.addEventListener('blur', handleBlur);
+        selF.addEventListener('focus', function() { clearTimeout(blurTimeout); });
+        selS.addEventListener('focus', function() { clearTimeout(blurTimeout); });
+        selB.addEventListener('focus', function() { clearTimeout(blurTimeout); });
+    }
+
+    function commitLocationEdit(td, item, newLocationId) {
+        td.classList.remove('editing');
+        editingCell = null;
+        var loc = getLocationById(newLocationId);
+        td.textContent = loc ? locationLabel(loc) : '';
+
+        var oldLocationId = item.location_id;
+        if (newLocationId != oldLocationId) {
+            if (loc) {
+                item.freezer = loc.freezer;
+                item.shelf = loc.shelf;
+                item.bin = loc.bin;
+                item.location_id = newLocationId;
+            }
+            saveField(item.id, 'location_id', newLocationId);
+        }
+    }
+
     function commitEdit(td) {
+        var cascade = td.querySelector('.cascade-editor');
+        if (cascade) {
+            var selects = cascade.querySelectorAll('select');
+            var freezer = selects[0] ? selects[0].value : '';
+            var shelf = selects[1] ? selects[1].value : '';
+            var bin = selects[2] ? selects[2].value : '';
+            var locId = getLocationId(freezer, shelf, bin);
+            var itemId = cascade.dataset.itemId;
+            var item = allItems.find(function(i) { return i.id === itemId; });
+            if (locId && item) {
+                commitLocationEdit(td, item, locId);
+            } else if (item) {
+                cancelEdit(td, item, 'location_id', 'select-location-cascade');
+            }
+            return;
+        }
+
         var input = td.querySelector('input, select');
         if (!input) return;
 
@@ -344,7 +703,6 @@
         td.classList.remove('editing');
         editingCell = null;
 
-        // Update display immediately
         if (field === 'quantity') {
             var item = allItems.find(function(i) { return i.id === itemId; });
             td.textContent = newValue + (item ? ' ' + item.unit : '');
@@ -354,7 +712,6 @@
             td.textContent = newValue != null ? String(newValue) : '';
         }
 
-        // Only save if value actually changed
         if (String(newValue) !== originalValue) {
             saveField(itemId, field, newValue);
         }
@@ -363,13 +720,16 @@
     function cancelEdit(td, item, field, type) {
         td.classList.remove('editing');
         editingCell = null;
-        var value = item[field];
-        if (field === 'quantity') {
-            td.textContent = value + ' ' + item.unit;
+        if (type === 'select-location-cascade') {
+            td.textContent = locationLabel(item);
+        } else if (field === 'quantity') {
+            td.textContent = item[field] + ' ' + item.unit;
         } else if (field === 'category') {
+            var value = item[field];
             td.innerHTML = '<span class="category-badge category-badge-' + escapeHtml(String(value)).replace(/\s+/g, '-') + '">' + escapeHtml(String(value)) + '</span>';
         } else {
-            td.textContent = value != null ? String(value) : '';
+            var val = item[field];
+            td.textContent = val != null ? String(val) : '';
         }
     }
 
@@ -379,44 +739,37 @@
         var tr = document.createElement('tr');
         tr.dataset.itemId = item.id;
 
-        // Name
         var tdName = document.createElement('td');
         tdName.textContent = item.name || '';
         makeEditable(tdName, item, 'name', 'text');
         tr.appendChild(tdName);
 
-        // Category
         var tdCategory = document.createElement('td');
         tdCategory.innerHTML = '<span class="category-badge category-badge-' + escapeHtml(item.category).replace(/\s+/g, '-') + '">' + escapeHtml(item.category) + '</span>';
         makeEditable(tdCategory, item, 'category', 'select-category');
         tr.appendChild(tdCategory);
 
-        // Quantity
         var tdQty = document.createElement('td');
         tdQty.textContent = item.quantity + ' ' + (item.unit || '');
         makeEditable(tdQty, item, 'quantity', 'number');
         tr.appendChild(tdQty);
 
-        // Unit
         var tdUnit = document.createElement('td');
         tdUnit.textContent = item.unit || '';
         makeEditable(tdUnit, item, 'unit', 'select-unit');
         tr.appendChild(tdUnit);
 
-        // Location
         var tdLoc = document.createElement('td');
-        tdLoc.textContent = item.freezer_zone || '';
-        makeEditable(tdLoc, item, 'freezer_zone', 'select-location');
+        tdLoc.textContent = locationLabel(item);
+        makeEditable(tdLoc, item, 'location_id', 'select-location-cascade');
         tr.appendChild(tdLoc);
 
-        // Notes
         var tdNotes = document.createElement('td');
         tdNotes.textContent = item.notes || '';
         tdNotes.className = 'cell-notes';
         makeEditable(tdNotes, item, 'notes', 'text');
         tr.appendChild(tdNotes);
 
-        // Date Added
         var tdDate = document.createElement('td');
         tdDate.className = 'cell-date';
         tdDate.textContent = item.date_added ? new Date(item.date_added).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
@@ -519,6 +872,23 @@
                 w.focus();
             })
             .catch(function() { showError('Failed to load PDF view.'); });
+    }
+
+    function handleDownloadCsv() {
+        fetch(API_BASE + '/items/export-csv', { headers: headers() })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var blob = new Blob([data.csv], { type: 'text/csv;charset=utf-8;' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = data.filename || 'freezer-inventory.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            })
+            .catch(function() { showError('Failed to export CSV.'); });
     }
 
     if (document.readyState === 'loading') {

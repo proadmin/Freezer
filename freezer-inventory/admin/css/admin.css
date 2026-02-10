@@ -27,6 +27,11 @@
 .btn-pdf:hover { background: #008a20; color: #fff; }
 .btn-import { background: #2271b1; color: #fff; display: inline-block; }
 .btn-import:hover { background: #135e96; color: #fff; }
+.btn-csv { background: #d63638; color: #fff; }
+.btn-csv:hover { background: #b32d2e; color: #fff; }
+.btn-danger { background: #d63638; color: #fff; }
+.btn-danger:hover { background: #b32d2e; color: #fff; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
 
 .filters-section { background: #f6f7f7; padding: 15px; border-radius: 4px; border: 1px solid #dcdcde; }
 .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
@@ -67,6 +72,12 @@ select.cell-editor { padding: 4px 6px; }
 
 .cell-notes { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cell-date { white-space: nowrap; color: #646970; font-size: 13px; }
+.cell-actions { white-space: nowrap; }
+.col-actions { width: 80px; }
+
+/* Cascade editor for inline location editing */
+.cascade-editor { display: flex; gap: 4px; }
+.cascade-editor select.cell-editor { flex: 1; min-width: 80px; font-size: 12px; padding: 3px 4px; }
 
 /* Category badges */
 .category-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
