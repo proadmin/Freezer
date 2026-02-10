@@ -89,6 +89,13 @@ select.cell-editor { padding: 4px 6px; }
 .category-badge-Bread { background: #fff8e0; color: #660; }
 .category-badge-Other { background: #f0f0f0; color: #333; }
 
+.inventory-footer { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; }
+
+.csv-columns-table-wrap { margin: 15px 0; overflow-x: auto; }
+.csv-columns-table code { background: #e8e8e8; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+.csv-import-area { margin-top: 15px; display: flex; align-items: center; gap: 12px; }
+.csv-file-name { color: #646970; font-style: italic; }
+
 .error-message { background: #fcf0f1; color: #b32d2e; padding: 12px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #f1aeb5; }
 .success-message { background: #edfaef; color: #00a32a; padding: 12px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #68de7c; }
 

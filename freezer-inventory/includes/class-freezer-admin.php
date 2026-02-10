@@ -41,6 +41,14 @@ class Freezer_Admin {
 			'freezer-item-names',
 			array( __CLASS__, 'render_item_names_page' )
 		);
+		add_submenu_page(
+			'freezer-inventory',
+			__( 'CSV Import / Export', 'freezer-inventory' ),
+			__( 'CSV Import / Export', 'freezer-inventory' ),
+			'manage_options',
+			'freezer-csv',
+			array( __CLASS__, 'render_csv_page' )
+		);
 	}
 
 	public static function enqueue_assets( $hook ) {
@@ -52,6 +60,8 @@ class Freezer_Admin {
 			self::do_enqueue_freezers_assets();
 		} elseif ( $hook === 'freezer-inventory_page_freezer-item-names' ) {
 			self::do_enqueue_item_names_assets();
+		} elseif ( $hook === 'freezer-inventory_page_freezer-csv' ) {
+			self::do_enqueue_csv_assets();
 		}
 	}
 
@@ -133,6 +143,30 @@ class Freezer_Admin {
 
 	public static function render_item_names_page() {
 		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/item-names-page.php';
+	}
+
+	public static function render_csv_page() {
+		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/csv-page.php';
+	}
+
+	public static function do_enqueue_csv_assets() {
+		wp_enqueue_style(
+			'freezer-inventory-admin',
+			FREEZER_INVENTORY_PLUGIN_URL . 'admin/css/admin.css',
+			array(),
+			FREEZER_INVENTORY_VERSION
+		);
+		wp_enqueue_script(
+			'freezer-inventory-csv',
+			FREEZER_INVENTORY_PLUGIN_URL . 'admin/js/csv.js',
+			array(),
+			FREEZER_INVENTORY_VERSION,
+			true
+		);
+		wp_localize_script( 'freezer-inventory-csv', 'freezerInventory', array(
+			'restUrl' => rest_url( 'freezer-inventory/v1' ),
+			'nonce'   => wp_create_nonce( 'wp_rest' ),
+		) );
 	}
 
 	public static function do_enqueue_item_names_assets() {

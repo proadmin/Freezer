@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
                     <div class="form-row">
                         <div class="form-group">
                             <label for="itemQuantity">Quantity *</label>
-                            <input type="number" id="itemQuantity" name="quantity" step="0.1" min="0" required placeholder="1.5">
+                            <input type="number" id="itemQuantity" name="quantity" step="1" min="0" required placeholder="1.5">
                         </div>
                         <div class="form-group">
                             <label for="itemUnit">Unit *</label>
@@ -125,10 +125,6 @@ defined( 'ABSPATH' ) || exit;
             <section class="inventory-section">
                 <div class="inventory-header">
                     <div id="inventoryStats" class="stats"></div>
-                    <button type="button" id="downloadPdfBtn" class="btn btn-pdf">Download PDF</button>
-                    <button type="button" id="downloadCsvBtn" class="btn btn-csv">Export CSV</button>
-                    <label class="btn btn-import" for="csvFileInput">Import CSV</label>
-                    <input type="file" id="csvFileInput" accept=".csv" style="display:none">
                 </div>
                 <div class="inventory-table-wrap">
                     <table id="inventoryTable" class="inventory-table">
@@ -147,6 +143,9 @@ defined( 'ABSPATH' ) || exit;
                             <tr><td colspan="7" class="empty-message">No items in freezer. Add your first item above!</td></tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="inventory-footer">
+                    <button type="button" id="downloadPdfBtn" class="btn btn-pdf">Download PDF</button>
                 </div>
             </section>
         </main>

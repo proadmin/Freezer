@@ -454,6 +454,20 @@
         populateFilterBins();
     }
 
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function toInputDate(dateStr) {
+        if (!dateStr) return '';
+        var d = new Date(dateStr);
+        var yyyy = d.getFullYear();
+        var mm = String(d.getMonth() + 1).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        return yyyy + '-' + mm + '-' + dd;
+    }
+
     function escapeHtml(text) {
         if (!text) return '';
         var div = document.createElement('div');
@@ -508,9 +522,13 @@
         } else if (type === 'number') {
             input = document.createElement('input');
             input.type = 'number';
-            input.step = '0.001';
+            input.step = '1';
             input.min = '0';
             input.value = currentValue != null ? currentValue : '';
+        } else if (type === 'date') {
+            input = document.createElement('input');
+            input.type = 'date';
+            input.value = toInputDate(currentValue);
         } else {
             input = document.createElement('input');
             input.type = 'text';
@@ -726,11 +744,14 @@
             td.textContent = newValue + (item ? ' ' + item.unit : '');
         } else if (field === 'category') {
             td.innerHTML = '<span class="category-badge category-badge-' + escapeHtml(String(newValue)).replace(/\s+/g, '-') + '">' + escapeHtml(String(newValue)) + '</span>';
+        } else if (field === 'date_added') {
+            td.textContent = newValue ? formatDate(newValue) : '';
         } else {
             td.textContent = newValue != null ? String(newValue) : '';
         }
 
-        if (String(newValue) !== originalValue) {
+        var compareOriginal = field === 'date_added' ? toInputDate(originalValue) : originalValue;
+        if (String(newValue) !== compareOriginal) {
             saveField(itemId, field, newValue);
         }
     }
@@ -745,6 +766,8 @@
         } else if (field === 'category') {
             var value = item[field];
             td.innerHTML = '<span class="category-badge category-badge-' + escapeHtml(String(value)).replace(/\s+/g, '-') + '">' + escapeHtml(String(value)) + '</span>';
+        } else if (field === 'date_added') {
+            td.textContent = formatDate(item[field]);
         } else {
             var val = item[field];
             td.textContent = val != null ? String(val) : '';
@@ -790,7 +813,8 @@
 
         var tdDate = document.createElement('td');
         tdDate.className = 'cell-date';
-        tdDate.textContent = item.date_added ? new Date(item.date_added).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+        tdDate.textContent = formatDate(item.date_added);
+        makeEditable(tdDate, item, 'date_added', 'date');
         tr.appendChild(tdDate);
 
         return tr;

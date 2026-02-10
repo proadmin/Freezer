@@ -637,7 +637,7 @@ class Freezer_Database {
 		global $wpdb;
 		$table   = self::get_table_name();
 		$id      = sanitize_text_field( $id );
-		$allowed = array( 'name', 'category', 'quantity', 'unit', 'location', 'notes' );
+		$allowed = array( 'name', 'category', 'quantity', 'unit', 'location', 'notes', 'date_added' );
 		$update  = array();
 		$formats = array();
 		foreach ( $allowed as $key ) {
@@ -647,6 +647,12 @@ class Freezer_Database {
 			if ( $key === 'quantity' ) {
 				$update[ $key ] = (float) $data[ $key ];
 				$formats[]      = '%f';
+			} elseif ( $key === 'date_added' ) {
+				$parsed = date( 'Y-m-d H:i:s', strtotime( $data[ $key ] ) );
+				if ( $parsed ) {
+					$update[ $key ] = $parsed;
+					$formats[]      = '%s';
+				}
 			} else {
 				$update[ $key ] = $key === 'notes' ? sanitize_textarea_field( $data[ $key ] ) : sanitize_text_field( $data[ $key ] );
 				$formats[]      = '%s';
