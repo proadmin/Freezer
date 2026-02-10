@@ -546,7 +546,10 @@ class Freezer_Database {
 		global $wpdb;
 		$table = self::get_table_name();
 		$id    = wp_generate_uuid4();
-		$date  = current_time( 'mysql' );
+		$date  = ! empty( $data['date_added'] ) ? date( 'Y-m-d H:i:s', strtotime( $data['date_added'] ) ) : current_time( 'mysql' );
+		if ( ! $date ) {
+			$date = current_time( 'mysql' );
+		}
 		$name     = sanitize_text_field( $data['name'] ?? '' );
 		$category = sanitize_text_field( $data['category'] ?? '' );
 		$quantity = (float) ( $data['quantity'] ?? 0 );

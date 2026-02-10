@@ -73,6 +73,7 @@ class Freezer_Admin {
 			'restUrl'     => rest_url( 'freezer-inventory/v1' ),
 			'nonce'       => wp_create_nonce( 'wp_rest' ),
 			'locations'   => Freezer_Database::get_locations(),
+			'freezers'    => Freezer_Database::get_freezers(),
 			'itemNames'   => Freezer_Database::get_item_names(),
 		) );
 	}
@@ -160,7 +161,7 @@ class Freezer_Admin {
 		}
 		self::do_enqueue_assets();
 		ob_start();
-		self::render_page();
+		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/frontend-page.php';
 		return ob_get_clean();
 	}
 

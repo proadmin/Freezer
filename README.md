@@ -1,14 +1,20 @@
 # Freezer Inventory Manager
 
-A WordPress plugin to manage your freezer inventory with an editable spreadsheet table, categories, locations, and PDF export.
+A WordPress plugin to manage your freezer inventory with an editable spreadsheet table, managed locations, and PDF/CSV export.
 
 ## Features
 
 - **Editable table** — click any cell to edit it in place, like a spreadsheet
 - **Keyboard navigation** — Tab between cells, Enter to move down, Escape to cancel
-- **Add items** with name, category, quantity, unit, location, and notes
+- **Add items** with name, category, quantity, unit, location (freezer/shelf/bin), and notes
+- **Cascading location dropdowns** — freezer → shelf → bin on add form, filters, and inline editing
+- **Managed freezers** — add/delete freezer names from the Freezers admin page
+- **Managed locations** — add/delete freezer/shelf/bin combinations from the Locations admin page
+- **Item name autocomplete** — dropdown learns new names as you add items; manage the list from the Item Names admin page
+- **Delete protection** — freezers, locations, and item names can't be deleted while in use
 - **Auto-remove** items when quantity reaches zero
-- **Search and filter** by name, category, or location
+- **Search and filter** by name, category, freezer, shelf, and bin
+- **CSV export/import** — download inventory as CSV or import from CSV
 - **PDF export** — print-friendly view in a new tab
 - **Frontend shortcode** — embed on any page with `[freezer_inventory]`
 - **Admin-only access** — requires `manage_options` capability
@@ -19,14 +25,20 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 2. In WordPress, go to Plugins > Add New > Upload Plugin
 3. Upload the zip and activate
 4. Find "Freezer Inventory" in the admin sidebar
+5. Set up freezers under Freezer Inventory > Freezers
+6. Set up locations under Freezer Inventory > Locations
+7. Start adding inventory items
 
 ### Frontend usage
 
 Add `[freezer_inventory]` to any page or post. The user must be logged in as an administrator.
 
-## Locations
+## Admin Pages
 
-Fixed locations: Shelf 1 Bin 1–3, Shelf 2 Bin 1–2, Shelf 2 Bulk, Door Shelf 1–2.
+- **Freezer Inventory** — main inventory table with add form, filters, and export
+- **Locations** — manage freezer/shelf/bin location combinations
+- **Freezers** — manage freezer names used in locations
+- **Item Names** — manage the autocomplete list for item names
 
 ## Requirements
 

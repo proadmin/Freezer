@@ -126,9 +126,6 @@ defined( 'ABSPATH' ) || exit;
                 <div class="inventory-header">
                     <div id="inventoryStats" class="stats"></div>
                     <button type="button" id="downloadPdfBtn" class="btn btn-pdf">Download PDF</button>
-                    <button type="button" id="downloadCsvBtn" class="btn btn-csv">Export CSV</button>
-                    <label class="btn btn-import" for="csvFileInput">Import CSV</label>
-                    <input type="file" id="csvFileInput" accept=".csv" style="display:none">
                 </div>
                 <div class="inventory-table-wrap">
                     <table id="inventoryTable" class="inventory-table">

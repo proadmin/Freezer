@@ -4,6 +4,7 @@
     var API_BASE = typeof freezerInventory !== 'undefined' ? freezerInventory.restUrl : '';
     var NONCE = typeof freezerInventory !== 'undefined' ? freezerInventory.nonce : '';
     var LOCATIONS = typeof freezerInventory !== 'undefined' ? freezerInventory.locations : [];
+    var FREEZERS = typeof freezerInventory !== 'undefined' ? freezerInventory.freezers : [];
     var ITEM_NAMES = typeof freezerInventory !== 'undefined' ? freezerInventory.itemNames : [];
 
     var CATEGORIES = ['Meat', 'Vegetables', 'Fruits', 'Prepared Meals', 'Dairy', 'Bread', 'Other'];
@@ -95,6 +96,7 @@
     var itemFreezer = document.getElementById('itemFreezer');
     var itemShelf = document.getElementById('itemShelf');
     var itemBin = document.getElementById('itemBin');
+    var itemDate = document.getElementById('itemDate');
 
     var allItems = [];
     var filteredItems = [];
@@ -134,6 +136,16 @@
         }
 
         populateItemNameList();
+        setDefaultDate();
+    }
+
+    function setDefaultDate() {
+        if (!itemDate) return;
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var dd = String(today.getDate()).padStart(2, '0');
+        itemDate.value = yyyy + '-' + mm + '-' + dd;
     }
 
     // --- Item name datalist ---
@@ -164,10 +176,10 @@
     function populateAddFreezers() {
         if (!itemFreezer) return;
         itemFreezer.innerHTML = '<option value="">Select freezer</option>';
-        getUniqueFreezers().forEach(function(f) {
+        FREEZERS.forEach(function(f) {
             var opt = document.createElement('option');
-            opt.value = f;
-            opt.textContent = f;
+            opt.value = f.name;
+            opt.textContent = f.name;
             itemFreezer.appendChild(opt);
         });
         populateAddShelves();
@@ -302,6 +314,7 @@
             quantity: parseFloat(formData.get('quantity')),
             unit: formData.get('unit'),
             location_id: locId,
+            date_added: formData.get('date_added') || '',
             notes: formData.get('notes') || ''
         };
 
@@ -321,6 +334,7 @@
                 allItems.unshift(res.json);
                 filteredItems = allItems.slice();
                 addItemForm.reset();
+                setDefaultDate();
                 populateAddFreezers();
                 updateFilters();
                 applyFilters();
