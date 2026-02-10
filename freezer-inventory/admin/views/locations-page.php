@@ -24,8 +24,8 @@ defined( 'ABSPATH' ) || exit;
                             <input type="text" id="locShelf" name="shelf" required placeholder="e.g., Shelf 1">
                         </div>
                         <div class="form-group">
-                            <label for="locBin">Bin *</label>
-                            <input type="text" id="locBin" name="bin" required placeholder="e.g., Bin 1">
+                            <label for="locBin">Bin</label>
+                            <input type="text" id="locBin" name="bin" placeholder="e.g., Bin 1 (optional)">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Add Location</button>

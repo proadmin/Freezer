@@ -36,6 +36,9 @@ class Freezer_Rest {
 					'location'     => array( 'type' => 'string', 'required' => false ),
 					'notes'        => array( 'type' => 'string', 'required' => false ),
 					'date_added'   => array( 'type' => 'string', 'required' => false ),
+					'freezer'      => array( 'type' => 'string', 'required' => false ),
+					'shelf'        => array( 'type' => 'string', 'required' => false ),
+					'bin'          => array( 'type' => 'string', 'required' => false ),
 				),
 			),
 		) );

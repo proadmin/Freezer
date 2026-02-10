@@ -199,8 +199,8 @@ class Freezer_Database {
 		$freezer = sanitize_text_field( $data['freezer'] ?? '' );
 		$shelf   = sanitize_text_field( $data['shelf'] ?? '' );
 		$bin     = sanitize_text_field( $data['bin'] ?? '' );
-		if ( ! $freezer || ! $shelf || ! $bin ) {
-			return new WP_Error( 'missing', __( 'Freezer, shelf, and bin are required.', 'freezer-inventory' ) );
+		if ( ! $freezer || ! $shelf ) {
+			return new WP_Error( 'missing', __( 'Freezer and shelf are required.', 'freezer-inventory' ) );
 		}
 		$exists = $wpdb->get_var( $wpdb->prepare(
 			"SELECT id FROM $table WHERE freezer = %s AND shelf = %s AND bin = %s",
@@ -560,6 +560,12 @@ class Freezer_Database {
 		$location_id = null;
 		if ( ! empty( $data['location_id'] ) ) {
 			$location_id = (int) $data['location_id'];
+		} elseif ( ! empty( $data['freezer'] ) && ! empty( $data['shelf'] ) ) {
+			$location_id = self::find_or_create_location(
+				$data['freezer'],
+				$data['shelf'],
+				isset( $data['bin'] ) ? $data['bin'] : ''
+			);
 		}
 		// Build display string.
 		$location = '';

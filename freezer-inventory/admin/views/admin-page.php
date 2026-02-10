@@ -65,8 +65,8 @@ defined( 'ABSPATH' ) || exit;
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="itemBin">Bin *</label>
-                            <select id="itemBin" required>
+                            <label for="itemBin">Bin</label>
+                            <select id="itemBin">
                                 <option value="">Select bin</option>
                             </select>
                         </div>

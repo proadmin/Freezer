@@ -201,11 +201,12 @@
 
     function populateAddBins() {
         if (!itemBin) return;
-        itemBin.innerHTML = '<option value="">Select bin</option>';
+        itemBin.innerHTML = '<option value="">(none)</option>';
         var freezer = itemFreezer ? itemFreezer.value : '';
         var shelf = itemShelf ? itemShelf.value : '';
         if (!freezer || !shelf) return;
         getBinsForFreezerShelf(freezer, shelf).forEach(function(b) {
+            if (!b) return;
             var opt = document.createElement('option');
             opt.value = b;
             opt.textContent = b;
@@ -297,26 +298,28 @@
         var shelf = itemShelf ? itemShelf.value : '';
         var bin = itemBin ? itemBin.value : '';
 
-        if (!freezer || !shelf || !bin) {
-            showError('Please select a Freezer, Shelf, and Bin.');
+        if (!freezer || !shelf) {
+            showError('Please select a Freezer and Shelf.');
             return;
         }
 
         var locId = getLocationId(freezer, shelf, bin);
-        if (!locId) {
-            showError('Invalid location selected.');
-            return;
-        }
 
         var itemData = {
             name: formData.get('name'),
             category: formData.get('category'),
             quantity: parseFloat(formData.get('quantity')),
             unit: formData.get('unit'),
-            location_id: locId,
             date_added: formData.get('date_added') || '',
             notes: formData.get('notes') || ''
         };
+        if (locId) {
+            itemData.location_id = locId;
+        } else {
+            itemData.freezer = freezer;
+            itemData.shelf = shelf;
+            itemData.bin = bin;
+        }
 
         if (!itemData.name || !itemData.category) {
             showError('Please fill in all required fields.');
@@ -599,11 +602,12 @@
         }
 
         function populateBins() {
-            selB.innerHTML = '<option value="">Bin</option>';
+            selB.innerHTML = '<option value="">(none)</option>';
             var freezer = selF.value;
             var shelf = selS.value;
             if (!freezer || !shelf) return;
             getBinsForFreezerShelf(freezer, shelf).forEach(function(b) {
+                if (!b) return;
                 var opt = document.createElement('option');
                 opt.value = b;
                 opt.textContent = b;
