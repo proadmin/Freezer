@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 2.0.12
+Stable tag: 2.0.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,10 @@ The item is automatically deleted from the inventory.
 You can delete them from the Settings page, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 2.0.13 =
+* Improved frontend shortcode responsiveness — full width on all devices and screen sizes
+* Tighter layout on small screens (480px and below) for maximum table space
 
 = 2.0.12 =
 * Consolidated Item Names into the Settings page as a tabbed interface (Categories, Freezers, Locations, Item Names)

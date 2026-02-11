@@ -108,11 +108,14 @@ select.cell-editor { padding: 4px 6px; }
 .success-message { background: #edfaef; color: #00a32a; padding: 12px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #68de7c; }
 
 /* Frontend shortcode — full width, no admin margins */
-.freezer-inventory-wrap.freezer-frontend { margin: 0; padding: 15px; }
-.freezer-frontend .freezer-inventory-main { border: none; box-shadow: none; padding: 0; }
+.freezer-inventory-wrap.freezer-frontend { margin: 0; padding: 15px; max-width: none; width: 100%; box-sizing: border-box; }
+.freezer-frontend .freezer-inventory-container { max-width: none; }
+.freezer-frontend .freezer-inventory-main { border: none; box-shadow: none; padding: 0; max-width: none; }
+.freezer-frontend .inventory-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 @media (max-width: 782px) {
     .freezer-inventory-wrap { margin: 10px 10px 10px 0; }
+    .freezer-inventory-wrap.freezer-frontend { margin: 0; padding: 10px; }
     .freezer-inventory-main { padding: 15px; }
     .form-section { padding: 15px; }
     .form-row { grid-template-columns: 1fr; }
@@ -122,4 +125,12 @@ select.cell-editor { padding: 4px 6px; }
     .btn { width: 100%; text-align: center; }
     .inventory-footer { flex-direction: column; }
     .csv-import-area { flex-direction: column; align-items: stretch; }
+}
+
+@media (max-width: 480px) {
+    .freezer-inventory-wrap.freezer-frontend { padding: 5px; }
+    .freezer-frontend .form-section { padding: 10px; }
+    .freezer-frontend .filters-section { padding: 10px; }
+    .freezer-frontend .inventory-table { font-size: 12px; }
+    .freezer-frontend .inventory-table td, .freezer-frontend .inventory-table thead th { padding: 5px 6px; }
 }
