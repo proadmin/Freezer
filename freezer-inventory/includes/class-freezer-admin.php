@@ -167,7 +167,7 @@ class Freezer_Admin {
 						<th>Shelf</th>
 						<th>Bin</th>
 						<th>Raw / Cooked</th>
-						<th>Date Added</th>
+						<th>Month Added</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -181,7 +181,7 @@ class Freezer_Admin {
 							<td><?php echo esc_html( $item['shelf'] ?? '' ); ?></td>
 							<td><?php echo esc_html( $item['bin'] ?? '' ); ?></td>
 							<td><?php echo esc_html( $item['preparation'] ?? '' ); ?></td>
-							<td><?php echo esc_html( date( 'Y-m-d', strtotime( $item['date_added'] ) ) ); ?></td>
+							<td><?php echo esc_html( date( 'M Y', strtotime( $item['date_added'] ) ) ); ?></td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>

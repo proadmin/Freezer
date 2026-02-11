@@ -88,8 +88,6 @@
     var searchInput = document.getElementById('searchInput');
     var categoryFilter = document.getElementById('categoryFilter');
     var freezerFilter = document.getElementById('freezerFilter');
-    var shelfFilter = document.getElementById('shelfFilter');
-    var binFilter = document.getElementById('binFilter');
     var preparationFilter = document.getElementById('preparationFilter');
     var clearFiltersBtn = document.getElementById('clearFilters');
     var inventoryStats = document.getElementById('inventoryStats');
@@ -110,16 +108,7 @@
         if (addItemForm) addItemForm.addEventListener('submit', handleAddItem);
         if (searchInput) searchInput.addEventListener('input', applyFilters);
         if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
-        if (freezerFilter) freezerFilter.addEventListener('change', function() {
-            populateFilterShelves();
-            populateFilterBins();
-            applyFilters();
-        });
-        if (shelfFilter) shelfFilter.addEventListener('change', function() {
-            populateFilterBins();
-            applyFilters();
-        });
-        if (binFilter) binFilter.addEventListener('change', applyFilters);
+        if (freezerFilter) freezerFilter.addEventListener('change', applyFilters);
         if (preparationFilter) preparationFilter.addEventListener('change', applyFilters);
         if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', clearFilters);
         if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', handleDownloadPdf);
@@ -150,8 +139,7 @@
         var today = new Date();
         var yyyy = today.getFullYear();
         var mm = String(today.getMonth() + 1).padStart(2, '0');
-        var dd = String(today.getDate()).padStart(2, '0');
-        itemDate.value = yyyy + '-' + mm + '-' + dd;
+        itemDate.value = yyyy + '-' + mm;
     }
 
     // --- Category select ---
@@ -251,47 +239,6 @@
             freezerFilter.appendChild(opt);
         });
         freezerFilter.value = val;
-    }
-
-    function populateFilterShelves() {
-        if (!shelfFilter) return;
-        var val = shelfFilter.value;
-        shelfFilter.innerHTML = '<option value="">All Shelves</option>';
-        var freezer = freezerFilter ? freezerFilter.value : '';
-        var shelves = {};
-        allItems.forEach(function(item) {
-            if (item.shelf && (!freezer || item.freezer === freezer)) {
-                shelves[item.shelf] = true;
-            }
-        });
-        Object.keys(shelves).sort().forEach(function(s) {
-            var opt = document.createElement('option');
-            opt.value = s;
-            opt.textContent = s;
-            shelfFilter.appendChild(opt);
-        });
-        shelfFilter.value = val;
-    }
-
-    function populateFilterBins() {
-        if (!binFilter) return;
-        var val = binFilter.value;
-        binFilter.innerHTML = '<option value="">All Bins</option>';
-        var freezer = freezerFilter ? freezerFilter.value : '';
-        var shelf = shelfFilter ? shelfFilter.value : '';
-        var bins = {};
-        allItems.forEach(function(item) {
-            if (item.bin && (!freezer || item.freezer === freezer) && (!shelf || item.shelf === shelf)) {
-                bins[item.bin] = true;
-            }
-        });
-        Object.keys(bins).sort().forEach(function(b) {
-            var opt = document.createElement('option');
-            opt.value = b;
-            opt.textContent = b;
-            binFilter.appendChild(opt);
-        });
-        binFilter.value = val;
     }
 
     // --- Data ---
@@ -429,18 +376,14 @@
         var searchQuery = (searchInput && searchInput.value || '').toLowerCase().trim();
         var categoryValue = categoryFilter ? categoryFilter.value : '';
         var freezerValue = freezerFilter ? freezerFilter.value : '';
-        var shelfValue = shelfFilter ? shelfFilter.value : '';
-        var binValue = binFilter ? binFilter.value : '';
         var preparationValue = preparationFilter ? preparationFilter.value : '';
 
         filteredItems = allItems.filter(function(item) {
             var matchSearch = !searchQuery || (item.name || '').toLowerCase().indexOf(searchQuery) !== -1;
             var matchCategory = !categoryValue || item.category === categoryValue;
             var matchFreezer = !freezerValue || item.freezer === freezerValue;
-            var matchShelf = !shelfValue || item.shelf === shelfValue;
-            var matchBin = !binValue || item.bin === binValue;
             var matchPreparation = !preparationValue || item.preparation === preparationValue;
-            return matchSearch && matchCategory && matchFreezer && matchShelf && matchBin && matchPreparation;
+            return matchSearch && matchCategory && matchFreezer && matchPreparation;
         });
         renderInventory();
         updateStats();
@@ -450,11 +393,7 @@
         if (searchInput) searchInput.value = '';
         if (categoryFilter) categoryFilter.value = '';
         if (freezerFilter) freezerFilter.value = '';
-        if (shelfFilter) shelfFilter.value = '';
-        if (binFilter) binFilter.value = '';
         if (preparationFilter) preparationFilter.value = '';
-        populateFilterShelves();
-        populateFilterBins();
         applyFilters();
     }
 
@@ -471,22 +410,19 @@
             categoryFilter.value = prev;
         }
         populateFilterFreezers();
-        populateFilterShelves();
-        populateFilterBins();
     }
 
     function formatDate(dateStr) {
         if (!dateStr) return '';
-        return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
     }
 
-    function toInputDate(dateStr) {
+    function toInputMonth(dateStr) {
         if (!dateStr) return '';
         var d = new Date(dateStr);
         var yyyy = d.getFullYear();
         var mm = String(d.getMonth() + 1).padStart(2, '0');
-        var dd = String(d.getDate()).padStart(2, '0');
-        return yyyy + '-' + mm + '-' + dd;
+        return yyyy + '-' + mm;
     }
 
     function escapeHtml(text) {
@@ -558,8 +494,8 @@
             input.value = currentValue != null ? currentValue : '';
         } else if (type === 'date') {
             input = document.createElement('input');
-            input.type = 'date';
-            input.value = toInputDate(currentValue);
+            input.type = 'month';
+            input.value = toInputMonth(currentValue);
         } else {
             input = document.createElement('input');
             input.type = 'text';
@@ -781,7 +717,7 @@
             td.textContent = newValue != null ? String(newValue) : '';
         }
 
-        var compareOriginal = field === 'date_added' ? toInputDate(originalValue) : originalValue;
+        var compareOriginal = field === 'date_added' ? toInputMonth(originalValue) : originalValue;
         if (String(newValue) !== compareOriginal) {
             saveField(itemId, field, newValue);
         }

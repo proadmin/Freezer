@@ -270,6 +270,10 @@ class Freezer_Rest {
 			return new WP_REST_Response( array( 'error' => 'Empty CSV file.' ), 400 );
 		}
 		$header = array_map( 'strtolower', array_map( 'trim', $header ) );
+		// Map "month added" or "date added" header to internal "date_added" key.
+		$header = array_map( function( $h ) {
+			return ( $h === 'month added' || $h === 'date added' ) ? 'date_added' : $h;
+		}, $header );
 
 		$items = array();
 		while ( ( $row = fgetcsv( $handle ) ) !== false ) {
@@ -303,7 +307,7 @@ class Freezer_Rest {
 	public static function export_csv( $request ) {
 		$items  = Freezer_Database::get_items( array() );
 		$output = fopen( 'php://temp', 'r+' );
-		fputcsv( $output, array( 'Name', 'Category', 'Quantity', 'Unit', 'Freezer', 'Shelf', 'Bin', 'Preparation', 'Date Added', 'Notes' ) );
+		fputcsv( $output, array( 'Name', 'Category', 'Quantity', 'Unit', 'Freezer', 'Shelf', 'Bin', 'Preparation', 'Month Added', 'Notes' ) );
 		foreach ( $items as $item ) {
 			fputcsv( $output, array(
 				$item['name'],
@@ -314,7 +318,7 @@ class Freezer_Rest {
 				$item['shelf'] ?? '',
 				$item['bin'] ?? '',
 				$item['preparation'] ?? '',
-				$item['date_added'],
+				date( 'M Y', strtotime( $item['date_added'] ) ),
 				$item['notes'] ?? '',
 			) );
 		}

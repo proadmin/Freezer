@@ -1,7 +1,7 @@
-Name,Category,Quantity,Unit,Freezer,Shelf,Bin,Preparation,Date Added,Notes
-Chicken Breast,Meat,4,lbs,Main Freezer,Shelf 1,Bin 1,Raw,2026-01-15,Boneless skinless
-Ground Beef,Meat,2,lbs,Main Freezer,Shelf 1,Bin 2,Raw,2026-01-20,80/20 blend
-Frozen Peas,Vegetables,1,bags,Main Freezer,Shelf 2,Bin 1,Raw,2026-02-01,
-Mixed Berries,Fruits,3,bags,Main Freezer,Shelf 2,Bin 2,Raw,2026-01-25,Strawberry blueberry mix
-Lasagna,Prepared Meals,2,containers,Main Freezer,Shelf 1,Bin 3,Cooked,2026-02-05,Homemade
-Sourdough Bread,Bread,1,pieces,Main Freezer,Door,,Raw,2026-02-08,Sliced
+Name,Category,Quantity,Unit,Freezer,Shelf,Bin,Preparation,Month Added,Notes
+Chicken Breast,Meat,4,lbs,Main Freezer,Shelf 1,Bin 1,Raw,2026-01,Boneless skinless
+Ground Beef,Meat,2,lbs,Main Freezer,Shelf 1,Bin 2,Raw,2026-01,80/20 blend
+Frozen Peas,Vegetables,1,bags,Main Freezer,Shelf 2,Bin 1,Raw,2026-02,
+Mixed Berries,Fruits,3,bags,Main Freezer,Shelf 2,Bin 2,Raw,2026-01,Strawberry blueberry mix
+Lasagna,Prepared Meals,2,containers,Main Freezer,Shelf 1,Bin 3,Cooked,2026-02,Homemade
+Sourdough Bread,Bread,1,pieces,Main Freezer,Door,,Raw,2026-02,Sliced

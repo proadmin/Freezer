@@ -75,8 +75,8 @@ defined( 'ABSPATH' ) || exit;
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="itemDate">Date Added *</label>
-                            <input type="date" id="itemDate" name="date_added" required>
+                            <label for="itemDate">Month Added *</label>
+                            <input type="month" id="itemDate" name="date_added" required>
                         </div>
                         <div class="form-group">
                             <label for="itemNotes">Notes (optional)</label>
@@ -108,18 +108,6 @@ defined( 'ABSPATH' ) || exit;
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="shelfFilter">Shelf:</label>
-                        <select id="shelfFilter">
-                            <option value="">All Shelves</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="binFilter">Bin:</label>
-                        <select id="binFilter">
-                            <option value="">All Bins</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
                         <label for="preparationFilter">Raw / Cooked:</label>
                         <select id="preparationFilter">
                             <option value="">All</option>
@@ -146,7 +134,7 @@ defined( 'ABSPATH' ) || exit;
                                 <th>Raw / Cooked</th>
                                 <th>Location</th>
                                 <th>Notes</th>
-                                <th>Date Added</th>
+                                <th>Month Added</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody">

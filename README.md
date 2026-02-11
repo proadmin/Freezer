@@ -5,9 +5,9 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 ## Features
 
 - **Editable table** — click any cell to edit it in place, like a spreadsheet
-- **Editable dates** — inline date picker for the Date Added column
+- **Editable dates** — inline month picker for the Month Added column
 - **Keyboard navigation** — Tab between cells, Enter to move down, Escape to cancel
-- **Add items** with name, category, quantity, unit, raw/cooked, location (freezer/shelf/bin), date, and notes
+- **Add items** with name, category, quantity, unit, raw/cooked, location (freezer/shelf/bin), month added, and notes
 - **Cascading location dropdowns** — freezer → shelf → bin on add form, filters, and inline editing; bin is optional
 - **Managed freezers** — add/delete freezer names from the Settings page
 - **Managed locations** — add/delete freezer/shelf/bin combinations from the Settings page
@@ -16,7 +16,7 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 - **Delete protection** — freezers, locations, and item names can't be deleted while in use
 - **Auto-remove** items when quantity reaches zero
 - **Raw / Cooked field** — required preparation status with filtering support
-- **Search and filter** by name, category, freezer, shelf, bin, and raw/cooked
+- **Search and filter** by name, category, freezer, and raw/cooked
 - **CSV import/export** — dedicated admin page with column documentation and example CSV
 - **PDF export** — print-friendly view in a new tab
 - **Frontend shortcode** — embed on any page with `[freezer_inventory]` — all visitors can view and edit (without CSV functions)

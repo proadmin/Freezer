@@ -1,1 +1,3 @@
 - Update README.md and readme.txt when we commit.
+- [done] Remove the Shelf: and Bin: filter selectors from the inventory section
+- [done] convert all dates to "month / year" format. Do not track days, only month and year.
