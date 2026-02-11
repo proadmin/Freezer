@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 2.0.8
+Stable tag: 2.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,7 +26,8 @@ Freezer Inventory Manager lets you:
 * Cascading location dropdowns (freezer → shelf → bin); bin is optional
 * Dedicated CSV Import / Export admin page with column documentation and example CSV
 * Print-friendly PDF view
-* Embed the full inventory on any frontend page with the `[freezer_inventory]` shortcode (without CSV functions)
+* Embed the full inventory on any frontend page with the `[freezer_inventory]` shortcode — all visitors can view and edit (without CSV functions)
+* Automatic updates from GitHub releases via the WordPress Plugins page
 
 == Installation ==
 
@@ -41,7 +42,7 @@ Freezer Inventory Manager lets you:
 
 = Where is data stored? =
 
-In custom database tables: `wp_freezer_inventory`, `wp_freezer_locations`, `wp_freezer_freezers`, `wp_freezer_item_names`, and `wp_freezer_categories` (prefix may vary). Only administrators can access the data.
+In custom database tables: `wp_freezer_inventory`, `wp_freezer_locations`, `wp_freezer_freezers`, `wp_freezer_item_names`, and `wp_freezer_categories` (prefix may vary). Admin pages require `manage_options`. The frontend shortcode is accessible to all visitors.
 
 = How do I get a PDF? =
 
@@ -53,7 +54,7 @@ Go to Freezer Inventory > CSV Import / Export. Click "Export CSV" to download th
 
 = Can I use this on the frontend? =
 
-Yes. Add the shortcode `[freezer_inventory]` to any WordPress page or post. The logged-in user must have administrator privileges to view and edit the inventory.
+Yes. Add the shortcode `[freezer_inventory]` to any WordPress page or post. All visitors can view and edit the inventory — no login required.
 
 = How do I edit an item? =
 
@@ -69,13 +70,15 @@ You can delete them from the Settings or Item Names pages, but only if no invent
 
 == Changelog ==
 
-= 2.0.8 =
-* Combined Freezers and Locations into a single Settings admin page
+= 2.0.9 =
+* Frontend shortcode now works for all visitors (no login required) with full read-write access
+* Combined Freezers and Locations into a single Settings admin page with Categories at the top
 * Added managed categories — add/delete category presets from the Settings page
 * Categories are now stored in the database instead of being hardcoded
 * Category dropdowns (add form, filter, inline editing) populated dynamically from the database
 * New categories are auto-created when importing CSV items with unknown categories
-* Existing categories and any categories found in inventory items are migrated on upgrade
+* Removed "Shelf" and "Bin" prefixes from location shelf/bin values; existing data migrated automatically
+* Added GitHub-based automatic plugin updater — check for updates from the WordPress Plugins page
 
 = 2.0.7 =
 * Added Raw / Cooked (preparation) field — required on add form, filterable, inline-editable

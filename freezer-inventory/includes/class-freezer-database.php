@@ -111,14 +111,14 @@ class Freezer_Database {
 	// ------------------------------------------------------------------
 
 	private static $default_location_map = array(
-		'Shelf 1 Bin 1' => array( 'freezer' => 'Main Freezer', 'shelf' => 'Shelf 1', 'bin' => 'Bin 1' ),
-		'Shelf 1 Bin 2' => array( 'freezer' => 'Main Freezer', 'shelf' => 'Shelf 1', 'bin' => 'Bin 2' ),
-		'Shelf 1 Bin 3' => array( 'freezer' => 'Main Freezer', 'shelf' => 'Shelf 1', 'bin' => 'Bin 3' ),
-		'Shelf 2 Bin 1' => array( 'freezer' => 'Main Freezer', 'shelf' => 'Shelf 2', 'bin' => 'Bin 1' ),
-		'Shelf 2 Bin 2' => array( 'freezer' => 'Main Freezer', 'shelf' => 'Shelf 2', 'bin' => 'Bin 2' ),
-		'Shelf 2 Bulk'  => array( 'freezer' => 'Main Freezer', 'shelf' => 'Shelf 2', 'bin' => 'Bulk' ),
-		'Door Shelf 1'  => array( 'freezer' => 'Main Freezer', 'shelf' => 'Door',    'bin' => 'Shelf 1' ),
-		'Door Shelf 2'  => array( 'freezer' => 'Main Freezer', 'shelf' => 'Door',    'bin' => 'Shelf 2' ),
+		'Shelf 1 Bin 1' => array( 'freezer' => 'Main Freezer', 'shelf' => '1', 'bin' => '1' ),
+		'Shelf 1 Bin 2' => array( 'freezer' => 'Main Freezer', 'shelf' => '1', 'bin' => '2' ),
+		'Shelf 1 Bin 3' => array( 'freezer' => 'Main Freezer', 'shelf' => '1', 'bin' => '3' ),
+		'Shelf 2 Bin 1' => array( 'freezer' => 'Main Freezer', 'shelf' => '2', 'bin' => '1' ),
+		'Shelf 2 Bin 2' => array( 'freezer' => 'Main Freezer', 'shelf' => '2', 'bin' => '2' ),
+		'Shelf 2 Bulk'  => array( 'freezer' => 'Main Freezer', 'shelf' => '2', 'bin' => 'Bulk' ),
+		'Door Shelf 1'  => array( 'freezer' => 'Main Freezer', 'shelf' => 'Door', 'bin' => '1' ),
+		'Door Shelf 2'  => array( 'freezer' => 'Main Freezer', 'shelf' => 'Door', 'bin' => '2' ),
 	);
 
 	public static function seed_default_locations() {
@@ -179,6 +179,46 @@ class Freezer_Database {
 			if ( $loc_id ) {
 				$wpdb->update( $table, array( 'location_id' => (int) $loc_id ), array( 'id' => $row['id'] ), array( '%d' ), array( '%s' ) );
 			}
+		}
+	}
+
+	/**
+	 * Strip "Shelf " and "Bin " prefixes from existing location shelf/bin values
+	 * and update the location display string on inventory items.
+	 */
+	public static function migrate_strip_location_prefixes() {
+		global $wpdb;
+		$loc_table = self::get_locations_table_name();
+		$inv_table = self::get_table_name();
+
+		$rows = $wpdb->get_results( "SELECT id, freezer, shelf, bin FROM $loc_table", ARRAY_A );
+		if ( ! $rows ) {
+			return;
+		}
+		foreach ( $rows as $row ) {
+			$new_shelf = preg_replace( '/^Shelf\s+/i', '', $row['shelf'] );
+			$new_bin   = preg_replace( '/^Bin\s+/i', '', $row['bin'] );
+			if ( $new_shelf === $row['shelf'] && $new_bin === $row['bin'] ) {
+				continue;
+			}
+			// Check if stripping would create a duplicate.
+			$dup = $wpdb->get_var( $wpdb->prepare(
+				"SELECT id FROM $loc_table WHERE freezer = %s AND shelf = %s AND bin = %s AND id != %d",
+				$row['freezer'], $new_shelf, $new_bin, (int) $row['id']
+			) );
+			if ( $dup ) {
+				continue;
+			}
+			$wpdb->update(
+				$loc_table,
+				array( 'shelf' => $new_shelf, 'bin' => $new_bin ),
+				array( 'id' => (int) $row['id'] ),
+				array( '%s', '%s' ),
+				array( '%d' )
+			);
+			// Update the display string on inventory items.
+			$loc_display = $row['freezer'] . ' / ' . $new_shelf . ' / ' . $new_bin;
+			$wpdb->update( $inv_table, array( 'location' => $loc_display ), array( 'location_id' => (int) $row['id'] ), array( '%s' ), array( '%d' ) );
 		}
 	}
 

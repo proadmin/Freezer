@@ -76,6 +76,7 @@ class Freezer_Admin {
 			'freezers'    => Freezer_Database::get_freezers(),
 			'itemNames'   => Freezer_Database::get_item_names(),
 			'categories'  => Freezer_Database::get_categories(),
+			'canEdit'     => true,
 		) );
 	}
 
@@ -157,9 +158,6 @@ class Freezer_Admin {
 	}
 
 	public static function shortcode() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return '<p>You do not have permission to view the freezer inventory.</p>';
-		}
 		self::do_enqueue_assets();
 		ob_start();
 		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/frontend-page.php';

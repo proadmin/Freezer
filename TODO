@@ -1,5 +1,1 @@
-- Make frontend short cod work for all users.
-- Upate README.md and readme.txt when we commit.
-- Add funtionality to upgrade plugin from the wordpress Plugins page.
-- Remove "Shelf" and "Bin" prefixed for Shelf and Bin fields in the Locations table.
-- Move Categories to the top of the Settings page.
+- Update README.md and readme.txt when we commit.

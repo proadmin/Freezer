@@ -19,8 +19,9 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 - **Search and filter** by name, category, freezer, shelf, bin, and raw/cooked
 - **CSV import/export** — dedicated admin page with column documentation and example CSV
 - **PDF export** — print-friendly view in a new tab
-- **Frontend shortcode** — embed on any page with `[freezer_inventory]` (without CSV functions)
-- **Admin-only access** — requires `manage_options` capability
+- **Frontend shortcode** — embed on any page with `[freezer_inventory]` — all visitors can view and edit (without CSV functions)
+- **Automatic updates** — checks GitHub releases for new versions via the WordPress Plugins page
+- **Admin pages** — require `manage_options` capability
 
 ## Installation
 
@@ -33,7 +34,7 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 
 ### Frontend usage
 
-Add `[freezer_inventory]` to any page or post. The user must be logged in as an administrator.
+Add `[freezer_inventory]` to any page or post. All visitors can view and edit the inventory — no login required.
 
 ## Admin Pages
 

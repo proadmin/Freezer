@@ -15,7 +15,7 @@ class Freezer_Rest {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'get_items' ),
-				'permission_callback' => array( __CLASS__, 'check_permission' ),
+				'permission_callback' => array( __CLASS__, 'check_read_permission' ),
 				'args'                => array(
 					'category' => array( 'type' => 'string', 'required' => false ),
 					'location' => array( 'type' => 'string', 'required' => false ),
@@ -25,7 +25,7 @@ class Freezer_Rest {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( __CLASS__, 'add_item' ),
-				'permission_callback' => array( __CLASS__, 'check_permission' ),
+				'permission_callback' => array( __CLASS__, 'check_read_permission' ),
 				'args'                => array(
 					'name'         => array( 'type' => 'string', 'required' => true ),
 					'category'     => array( 'type' => 'string', 'required' => true ),
@@ -47,13 +47,13 @@ class Freezer_Rest {
 			array(
 				'methods'             => WP_REST_Server::DELETABLE,
 				'callback'            => array( __CLASS__, 'delete_item' ),
-				'permission_callback' => array( __CLASS__, 'check_permission' ),
+				'permission_callback' => array( __CLASS__, 'check_read_permission' ),
 				'args'                => array( 'id' => array( 'required' => true, 'type' => 'string' ) ),
 			),
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => array( __CLASS__, 'update_item' ),
-				'permission_callback' => array( __CLASS__, 'check_permission' ),
+				'permission_callback' => array( __CLASS__, 'check_read_permission' ),
 				'args'                => array(
 					'id'           => array( 'required' => true, 'type' => 'string' ),
 					'quantity'     => array( 'type' => 'number' ),
@@ -191,12 +191,16 @@ class Freezer_Rest {
 		register_rest_route( $namespace, '/inventory/pdf', array(
 			'methods'             => WP_REST_Server::READABLE,
 			'callback'            => array( __CLASS__, 'get_pdf' ),
-			'permission_callback' => array( __CLASS__, 'check_permission' ),
+			'permission_callback' => array( __CLASS__, 'check_read_permission' ),
 		) );
 	}
 
 	public static function check_permission( $request ) {
 		return current_user_can( 'manage_options' );
+	}
+
+	public static function check_read_permission( $request ) {
+		return true;
 	}
 
 	// ------------------------------------------------------------------

@@ -9,6 +9,7 @@
 
     var CATEGORIES_RAW = typeof freezerInventory !== 'undefined' ? freezerInventory.categories : [];
     var CATEGORIES = CATEGORIES_RAW.map(function(c) { return c.name; });
+    var CAN_EDIT = typeof freezerInventory !== 'undefined' && freezerInventory.canEdit;
     var UNITS = ['lbs', 'oz', 'pieces', 'bags', 'containers', 'packages'];
     var PREPARATIONS = ['Raw', 'Cooked'];
 
@@ -498,6 +499,7 @@
     // --- Inline editing ---
 
     function makeEditable(td, item, field, type) {
+        if (!CAN_EDIT) return;
         td.classList.add('editable-cell');
         td.addEventListener('click', function() {
             startEditing(td, item, field, type);
