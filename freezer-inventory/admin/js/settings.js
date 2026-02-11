@@ -23,19 +23,44 @@
     var addCategoryForm = document.getElementById('addCategoryForm');
     var categoriesBody = document.getElementById('categoriesBody');
 
+    var addItemNameForm = document.getElementById('addItemNameForm');
+    var itemNamesBody = document.getElementById('itemNamesBody');
+
     var allFreezers = [];
     var allLocations = [];
     var allCategories = [];
+    var allItemNames = [];
     var editingCell = null;
 
     function setup() {
         if (addFreezerForm) addFreezerForm.addEventListener('submit', handleAddFreezer);
         if (addLocationForm) addLocationForm.addEventListener('submit', handleAddLocation);
         if (addCategoryForm) addCategoryForm.addEventListener('submit', handleAddCategory);
+        if (addItemNameForm) addItemNameForm.addEventListener('submit', handleAddItemName);
 
+        initTabs();
         loadFreezers();
         loadLocations();
         loadCategories();
+        loadItemNames();
+    }
+
+    // ============================
+    // Tabs
+    // ============================
+
+    function initTabs() {
+        var tabs = document.querySelectorAll('.settings-tab');
+        tabs.forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                var target = tab.dataset.tab;
+                document.querySelectorAll('.settings-tab').forEach(function(t) { t.classList.remove('active'); });
+                document.querySelectorAll('.settings-tab-content').forEach(function(c) { c.classList.remove('active'); });
+                tab.classList.add('active');
+                var panel = document.querySelector('.settings-tab-content[data-tab="' + target + '"]');
+                if (panel) panel.classList.add('active');
+            });
+        });
     }
 
     // ============================
@@ -380,6 +405,86 @@
             tr.appendChild(tdAct);
 
             categoriesBody.appendChild(tr);
+        });
+    }
+
+    // ============================
+    // Item Names
+    // ============================
+
+    function loadItemNames() {
+        fetch(API_BASE + '/item-names', { headers: headers() })
+            .then(function(r) { return r.ok ? r.json() : Promise.reject(new Error('Failed to load')); })
+            .then(function(data) {
+                allItemNames = data;
+                renderItemNames();
+            })
+            .catch(function(err) { showMsg('item-names-section', 'error', err.message); });
+    }
+
+    function handleAddItemName(e) {
+        e.preventDefault();
+        var fd = new FormData(addItemNameForm);
+        var data = { name: fd.get('name') };
+        fetch(API_BASE + '/item-names', { method: 'POST', headers: headers(), body: JSON.stringify(data) })
+            .then(function(r) { return r.json().then(function(j) { return { ok: r.ok, json: j }; }); })
+            .then(function(res) {
+                if (!res.ok) throw new Error(res.json.error || 'Failed');
+                addItemNameForm.reset();
+                loadItemNames();
+                showMsg('item-names-section', 'success', 'Item name added.');
+            })
+            .catch(function(err) { showMsg('item-names-section', 'error', err.message); });
+    }
+
+    function deleteItemName(id) {
+        if (!confirm('Delete this item name?')) return;
+        fetch(API_BASE + '/item-names/' + id, { method: 'DELETE', headers: headers() })
+            .then(function(r) { return r.json().then(function(j) { return { ok: r.ok, json: j }; }); })
+            .then(function(res) {
+                if (!res.ok) throw new Error(res.json.error || 'Failed');
+                loadItemNames();
+                showMsg('item-names-section', 'success', 'Item name deleted.');
+            })
+            .catch(function(err) { showMsg('item-names-section', 'error', err.message); });
+    }
+
+    function renderItemNames() {
+        if (!itemNamesBody) return;
+        itemNamesBody.innerHTML = '';
+        if (allItemNames.length === 0) {
+            var tr = document.createElement('tr');
+            var td = document.createElement('td');
+            td.colSpan = 3;
+            td.className = 'empty-message';
+            td.textContent = 'No item names defined.';
+            tr.appendChild(td);
+            itemNamesBody.appendChild(tr);
+            return;
+        }
+        allItemNames.forEach(function(n) {
+            var tr = document.createElement('tr');
+
+            var tdName = document.createElement('td');
+            tdName.textContent = n.name;
+            tr.appendChild(tdName);
+
+            var tdCount = document.createElement('td');
+            tdCount.textContent = n.item_count || 0;
+            tdCount.className = 'cell-date';
+            tr.appendChild(tdCount);
+
+            var tdAct = document.createElement('td');
+            tdAct.className = 'cell-actions';
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-danger btn-sm';
+            btn.textContent = 'Delete';
+            btn.addEventListener('click', function() { deleteItemName(n.id); });
+            tdAct.appendChild(btn);
+            tr.appendChild(tdAct);
+
+            itemNamesBody.appendChild(tr);
         });
     }
 

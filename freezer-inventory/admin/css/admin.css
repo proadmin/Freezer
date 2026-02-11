@@ -10,6 +10,14 @@
 .freezer-inventory-main section:last-child { margin-bottom: 0; }
 .freezer-inventory-main h2 { color: #667eea; margin-bottom: 15px; font-size: 1.25rem; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; }
 
+/* Settings tabs */
+.settings-tabs { display: flex; gap: 0; border-bottom: 2px solid #e0e0e0; margin-bottom: 25px; }
+.settings-tab { padding: 10px 20px; border: none; background: none; font-size: 14px; font-weight: 600; color: #646970; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; }
+.settings-tab:hover { color: #1d2327; }
+.settings-tab.active { color: #667eea; border-bottom-color: #667eea; }
+.settings-tab-content { display: none; }
+.settings-tab-content.active { display: block; }
+
 .form-section { background: #f6f7f7; padding: 20px; border-radius: 4px; border: 1px solid #dcdcde; }
 .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
 .form-group { display: flex; flex-direction: column; }

@@ -27,14 +27,6 @@ class Freezer_Admin {
 		);
 		add_submenu_page(
 			'freezer-inventory',
-			__( 'Item Names', 'freezer-inventory' ),
-			__( 'Item Names', 'freezer-inventory' ),
-			'manage_options',
-			'freezer-item-names',
-			array( __CLASS__, 'render_item_names_page' )
-		);
-		add_submenu_page(
-			'freezer-inventory',
 			__( 'CSV Import / Export', 'freezer-inventory' ),
 			__( 'CSV Import / Export', 'freezer-inventory' ),
 			'manage_options',
@@ -48,8 +40,6 @@ class Freezer_Admin {
 			self::do_enqueue_assets();
 		} elseif ( $hook === 'freezer-inventory_page_freezer-settings' ) {
 			self::do_enqueue_settings_assets();
-		} elseif ( $hook === 'freezer-inventory_page_freezer-item-names' ) {
-			self::do_enqueue_item_names_assets();
 		} elseif ( $hook === 'freezer-inventory_page_freezer-csv' ) {
 			self::do_enqueue_csv_assets();
 		}
@@ -109,10 +99,6 @@ class Freezer_Admin {
 		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/settings-page.php';
 	}
 
-	public static function render_item_names_page() {
-		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/item-names-page.php';
-	}
-
 	public static function render_csv_page() {
 		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/csv-page.php';
 	}
@@ -132,26 +118,6 @@ class Freezer_Admin {
 			true
 		);
 		wp_localize_script( 'freezer-inventory-csv', 'freezerInventory', array(
-			'restUrl' => rest_url( 'freezer-inventory/v1' ),
-			'nonce'   => wp_create_nonce( 'wp_rest' ),
-		) );
-	}
-
-	public static function do_enqueue_item_names_assets() {
-		wp_enqueue_style(
-			'freezer-inventory-admin',
-			FREEZER_INVENTORY_PLUGIN_URL . 'admin/css/admin.css',
-			array(),
-			FREEZER_INVENTORY_VERSION
-		);
-		wp_enqueue_script(
-			'freezer-inventory-item-names',
-			FREEZER_INVENTORY_PLUGIN_URL . 'admin/js/item-names.js',
-			array(),
-			FREEZER_INVENTORY_VERSION,
-			true
-		);
-		wp_localize_script( 'freezer-inventory-item-names', 'freezerInventory', array(
 			'restUrl' => rest_url( 'freezer-inventory/v1' ),
 			'nonce'   => wp_create_nonce( 'wp_rest' ),
 		) );

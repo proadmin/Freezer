@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 2.0.10
+Stable tag: 2.0.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ Freezer Inventory Manager lets you:
 * Search and filter by name, category, freezer, shelf, bin, and raw/cooked
 * Manage freezers, locations, and categories from a single Settings page
 * Managed categories — add/delete category presets from the Settings page; new categories auto-created on import
-* Item name autocomplete dropdown that learns new names as you add items
+* Item name autocomplete dropdown that learns new names as you add items; manage the list from the Settings page
 * Cascading location dropdowns (freezer → shelf → bin); bin is optional
 * Dedicated CSV Import / Export admin page with column documentation and example CSV
 * Print-friendly PDF view
@@ -35,9 +35,8 @@ Freezer Inventory Manager lets you:
 1. Upload the plugin zip via Plugins > Add New > Upload Plugin, or unzip into wp-content/plugins/
 2. Activate "Freezer Inventory Manager" under Plugins
 3. Use the "Freezer Inventory" menu in the admin sidebar to manage inventory
-4. Set up freezers, locations, and categories under Freezer Inventory > Settings
-5. Optionally, manage the item name autocomplete list under Freezer Inventory > Item Names
-7. Optionally, add `[freezer_inventory]` to any page to access the inventory from the frontend
+4. Set up freezers, locations, categories, and item names under Freezer Inventory > Settings
+5. Optionally, add `[freezer_inventory]` to any page to access the inventory from the frontend
 
 == Frequently Asked Questions ==
 
@@ -67,9 +66,16 @@ The item is automatically deleted from the inventory.
 
 = Can I delete a freezer, location, category, or item name? =
 
-You can delete them from the Settings or Item Names pages, but only if no inventory items or locations currently reference them.
+You can delete them from the Settings page, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 2.0.12 =
+* Consolidated Item Names into the Settings page as a tabbed interface (Categories, Freezers, Locations, Item Names)
+* Removed Item Names as a separate admin submenu page
+
+= 2.0.11 =
+* Plugin update check now runs on every visit to the Plugins page instead of every 12 hours
 
 = 2.1.0 =
 * Made plugin fully responsive — uses full available width instead of 1200px max

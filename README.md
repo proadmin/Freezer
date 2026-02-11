@@ -12,7 +12,7 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 - **Managed freezers** — add/delete freezer names from the Settings page
 - **Managed locations** — add/delete freezer/shelf/bin combinations from the Settings page
 - **Managed categories** — add/delete category presets from the Settings page; new categories auto-created on import
-- **Item name autocomplete** — dropdown learns new names as you add items; manage the list from the Item Names admin page
+- **Item name autocomplete** — dropdown learns new names as you add items; manage the list from the Settings page
 - **Delete protection** — freezers, locations, and item names can't be deleted while in use
 - **Auto-remove** items when quantity reaches zero
 - **Raw / Cooked field** — required preparation status with filtering support
@@ -30,7 +30,7 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 2. In WordPress, go to Plugins > Add New > Upload Plugin
 3. Upload the zip and activate
 4. Find "Freezer Inventory" in the admin sidebar
-5. Set up freezers, locations, and categories under Freezer Inventory > Settings
+5. Set up freezers, locations, categories, and item names under Freezer Inventory > Settings
 6. Start adding inventory items
 
 ### Frontend usage
@@ -40,8 +40,7 @@ Add `[freezer_inventory]` to any page or post. All visitors can view and edit th
 ## Admin Pages
 
 - **Freezer Inventory** — main inventory table with add form, filters, and PDF export
-- **Settings** — manage freezers, locations, and categories in one place
-- **Item Names** — manage the autocomplete list for item names
+- **Settings** — tabbed page to manage categories, freezers, locations, and item names
 - **CSV Import / Export** — export inventory as CSV, import from CSV with column docs and example file
 
 ## Requirements

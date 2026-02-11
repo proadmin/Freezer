@@ -21,6 +21,12 @@ class Freezer_Updater {
 		add_filter( 'pre_set_site_transient_update_plugins', array( __CLASS__, 'check_for_update' ) );
 		add_filter( 'plugins_api', array( __CLASS__, 'plugin_info' ), 10, 3 );
 		add_filter( 'upgrader_post_install', array( __CLASS__, 'post_install' ), 10, 3 );
+		add_action( 'load-plugins.php', array( __CLASS__, 'flush_cache_on_plugins_page' ) );
+	}
+
+	public static function flush_cache_on_plugins_page() {
+		delete_transient( self::TRANSIENT_KEY );
+		delete_site_transient( 'update_plugins' );
 	}
 
 	private static function get_plugin_basename() {
