@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 2.0.7
+Stable tag: 2.0.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,8 @@ Freezer Inventory Manager lets you:
 * Navigate between cells with Tab, Enter, and Escape keys
 * Items are automatically removed when quantity reaches zero
 * Search and filter by name, category, freezer, shelf, bin, and raw/cooked
-* Manage freezers, locations, and item names from dedicated admin pages
+* Manage freezers, locations, and categories from a single Settings page
+* Managed categories — add/delete category presets from the Settings page; new categories auto-created on import
 * Item name autocomplete dropdown that learns new names as you add items
 * Cascading location dropdowns (freezer → shelf → bin); bin is optional
 * Dedicated CSV Import / Export admin page with column documentation and example CSV
@@ -32,16 +33,15 @@ Freezer Inventory Manager lets you:
 1. Upload the plugin zip via Plugins > Add New > Upload Plugin, or unzip into wp-content/plugins/
 2. Activate "Freezer Inventory Manager" under Plugins
 3. Use the "Freezer Inventory" menu in the admin sidebar to manage inventory
-4. Set up freezers under Freezer Inventory > Freezers
-5. Set up locations (freezer/shelf/bin combinations) under Freezer Inventory > Locations
-6. Optionally, manage the item name autocomplete list under Freezer Inventory > Item Names
+4. Set up freezers, locations, and categories under Freezer Inventory > Settings
+5. Optionally, manage the item name autocomplete list under Freezer Inventory > Item Names
 7. Optionally, add `[freezer_inventory]` to any page to access the inventory from the frontend
 
 == Frequently Asked Questions ==
 
 = Where is data stored? =
 
-In custom database tables: `wp_freezer_inventory`, `wp_freezer_locations`, `wp_freezer_freezers`, and `wp_freezer_item_names` (prefix may vary). Only administrators can access the data.
+In custom database tables: `wp_freezer_inventory`, `wp_freezer_locations`, `wp_freezer_freezers`, `wp_freezer_item_names`, and `wp_freezer_categories` (prefix may vary). Only administrators can access the data.
 
 = How do I get a PDF? =
 
@@ -63,11 +63,19 @@ Click any cell in the inventory table to edit it in place, including the date. U
 
 The item is automatically deleted from the inventory.
 
-= Can I delete a freezer, location, or item name? =
+= Can I delete a freezer, location, category, or item name? =
 
-You can delete them from their respective admin pages, but only if no inventory items or locations currently reference them.
+You can delete them from the Settings or Item Names pages, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 2.0.8 =
+* Combined Freezers and Locations into a single Settings admin page
+* Added managed categories — add/delete category presets from the Settings page
+* Categories are now stored in the database instead of being hardcoded
+* Category dropdowns (add form, filter, inline editing) populated dynamically from the database
+* New categories are auto-created when importing CSV items with unknown categories
+* Existing categories and any categories found in inventory items are migrated on upgrade
 
 = 2.0.7 =
 * Added Raw / Cooked (preparation) field — required on add form, filterable, inline-editable

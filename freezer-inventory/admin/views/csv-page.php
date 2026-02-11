@@ -31,7 +31,7 @@ $example_csv_url = FREEZER_INVENTORY_PLUGIN_URL . 'admin/example-import.csv';
                         </thead>
                         <tbody>
                             <tr><td><code>Name</code></td><td>Yes</td><td>Item name (e.g., Chicken Breast)</td></tr>
-                            <tr><td><code>Category</code></td><td>Yes</td><td>Meat, Vegetables, Fruits, Prepared Meals, Dairy, Bread, or Other</td></tr>
+                            <tr><td><code>Category</code></td><td>Yes</td><td>Bacon, Beans, Beef, Bread, Cheese, Chicken, Dairy, Dip, Fruits, Ice Cream, Meat, Pork, Prepared, Prepared Meals, Sauce, Sausage, Soup, Stock, Turkey, Vegetables, or Other</td></tr>
                             <tr><td><code>Quantity</code></td><td>Yes</td><td>Numeric quantity (e.g., 4)</td></tr>
                             <tr><td><code>Unit</code></td><td>Yes</td><td>lbs, oz, pieces, bags, containers, or packages</td></tr>
                             <tr><td><code>Freezer</code></td><td>Yes</td><td>Freezer name (e.g., Main Freezer)</td></tr>

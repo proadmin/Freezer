@@ -7,7 +7,8 @@
     var FREEZERS = typeof freezerInventory !== 'undefined' ? freezerInventory.freezers : [];
     var ITEM_NAMES = typeof freezerInventory !== 'undefined' ? freezerInventory.itemNames : [];
 
-    var CATEGORIES = ['Meat', 'Vegetables', 'Fruits', 'Prepared Meals', 'Dairy', 'Bread', 'Other'];
+    var CATEGORIES_RAW = typeof freezerInventory !== 'undefined' ? freezerInventory.categories : [];
+    var CATEGORIES = CATEGORIES_RAW.map(function(c) { return c.name; });
     var UNITS = ['lbs', 'oz', 'pieces', 'bags', 'containers', 'packages'];
     var PREPARATIONS = ['Raw', 'Cooked'];
 
@@ -138,6 +139,7 @@
             });
         }
 
+        populateAddCategories();
         populateItemNameList();
         setDefaultDate();
     }
@@ -149,6 +151,20 @@
         var mm = String(today.getMonth() + 1).padStart(2, '0');
         var dd = String(today.getDate()).padStart(2, '0');
         itemDate.value = yyyy + '-' + mm + '-' + dd;
+    }
+
+    // --- Category select ---
+
+    function populateAddCategories() {
+        var sel = document.getElementById('itemCategory');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Select category</option>';
+        CATEGORIES.forEach(function(cat) {
+            var opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            sel.appendChild(opt);
+        });
     }
 
     // --- Item name datalist ---
@@ -442,19 +458,16 @@
     }
 
     function updateFilters() {
-        var categories = [];
-        allItems.forEach(function(item) {
-            if (item.category && categories.indexOf(item.category) === -1) categories.push(item.category);
-        });
-        categories.sort();
         if (categoryFilter) {
+            var prev = categoryFilter.value;
             categoryFilter.innerHTML = '<option value="">All Categories</option>';
-            categories.forEach(function(cat) {
+            CATEGORIES.forEach(function(cat) {
                 var opt = document.createElement('option');
                 opt.value = cat;
                 opt.textContent = cat;
                 categoryFilter.appendChild(opt);
             });
+            categoryFilter.value = prev;
         }
         populateFilterFreezers();
         populateFilterShelves();

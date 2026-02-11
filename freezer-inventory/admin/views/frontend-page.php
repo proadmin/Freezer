@@ -22,13 +22,6 @@ defined( 'ABSPATH' ) || exit;
                             <label for="itemCategory">Category *</label>
                             <select id="itemCategory" name="category" required>
                                 <option value="">Select category</option>
-                                <option value="Meat">Meat</option>
-                                <option value="Vegetables">Vegetables</option>
-                                <option value="Fruits">Fruits</option>
-                                <option value="Prepared Meals">Prepared Meals</option>
-                                <option value="Dairy">Dairy</option>
-                                <option value="Bread">Bread</option>
-                                <option value="Other">Other</option>
                             </select>
                         </div>
                     </div>

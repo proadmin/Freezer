@@ -141,6 +141,29 @@ class Freezer_Rest {
 			'args'                => array( 'id' => array( 'required' => true, 'type' => 'integer' ) ),
 		) );
 
+		// Categories.
+		register_rest_route( $namespace, '/categories', array(
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( __CLASS__, 'get_categories' ),
+				'permission_callback' => array( __CLASS__, 'check_permission' ),
+			),
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( __CLASS__, 'add_category' ),
+				'permission_callback' => array( __CLASS__, 'check_permission' ),
+				'args'                => array(
+					'name' => array( 'type' => 'string', 'required' => true ),
+				),
+			),
+		) );
+		register_rest_route( $namespace, '/categories/(?P<id>\d+)', array(
+			'methods'             => WP_REST_Server::DELETABLE,
+			'callback'            => array( __CLASS__, 'delete_category' ),
+			'permission_callback' => array( __CLASS__, 'check_permission' ),
+			'args'                => array( 'id' => array( 'required' => true, 'type' => 'integer' ) ),
+		) );
+
 		// Item Names.
 		register_rest_route( $namespace, '/item-names', array(
 			array(
@@ -372,6 +395,38 @@ class Freezer_Rest {
 			return new WP_REST_Response( array( 'error' => $result->get_error_message() ), $code );
 		}
 		return new WP_REST_Response( array( 'message' => 'Freezer deleted' ), 200 );
+	}
+
+	// ------------------------------------------------------------------
+	// Categories
+	// ------------------------------------------------------------------
+
+	public static function get_categories( $request ) {
+		$categories = Freezer_Database::get_categories();
+		$counts     = Freezer_Database::category_item_counts();
+		foreach ( $categories as &$c ) {
+			$c['item_count'] = isset( $counts[ $c['name'] ] ) ? $counts[ $c['name'] ] : 0;
+		}
+		return new WP_REST_Response( $categories, 200 );
+	}
+
+	public static function add_category( $request ) {
+		$params = $request->get_json_params() ?: $request->get_body_params();
+		$result = Freezer_Database::add_category( $params['name'] ?? '' );
+		if ( is_wp_error( $result ) ) {
+			return new WP_REST_Response( array( 'error' => $result->get_error_message() ), 400 );
+		}
+		return new WP_REST_Response( $result, 201 );
+	}
+
+	public static function delete_category( $request ) {
+		$id     = (int) $request['id'];
+		$result = Freezer_Database::delete_category( $id );
+		if ( is_wp_error( $result ) ) {
+			$code = $result->get_error_code() === 'in_use' ? 409 : 404;
+			return new WP_REST_Response( array( 'error' => $result->get_error_message() ), $code );
+		}
+		return new WP_REST_Response( array( 'message' => 'Category deleted' ), 200 );
 	}
 
 	// ------------------------------------------------------------------

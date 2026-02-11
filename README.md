@@ -9,8 +9,9 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 - **Keyboard navigation** — Tab between cells, Enter to move down, Escape to cancel
 - **Add items** with name, category, quantity, unit, raw/cooked, location (freezer/shelf/bin), date, and notes
 - **Cascading location dropdowns** — freezer → shelf → bin on add form, filters, and inline editing; bin is optional
-- **Managed freezers** — add/delete freezer names from the Freezers admin page
-- **Managed locations** — add/delete freezer/shelf/bin combinations from the Locations admin page
+- **Managed freezers** — add/delete freezer names from the Settings page
+- **Managed locations** — add/delete freezer/shelf/bin combinations from the Settings page
+- **Managed categories** — add/delete category presets from the Settings page; new categories auto-created on import
 - **Item name autocomplete** — dropdown learns new names as you add items; manage the list from the Item Names admin page
 - **Delete protection** — freezers, locations, and item names can't be deleted while in use
 - **Auto-remove** items when quantity reaches zero
@@ -27,9 +28,8 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 2. In WordPress, go to Plugins > Add New > Upload Plugin
 3. Upload the zip and activate
 4. Find "Freezer Inventory" in the admin sidebar
-5. Set up freezers under Freezer Inventory > Freezers
-6. Set up locations under Freezer Inventory > Locations
-7. Start adding inventory items
+5. Set up freezers, locations, and categories under Freezer Inventory > Settings
+6. Start adding inventory items
 
 ### Frontend usage
 
@@ -38,8 +38,7 @@ Add `[freezer_inventory]` to any page or post. The user must be logged in as an 
 ## Admin Pages
 
 - **Freezer Inventory** — main inventory table with add form, filters, and PDF export
-- **Locations** — manage freezer/shelf/bin location combinations
-- **Freezers** — manage freezer names used in locations
+- **Settings** — manage freezers, locations, and categories in one place
 - **Item Names** — manage the autocomplete list for item names
 - **CSV Import / Export** — export inventory as CSV, import from CSV with column docs and example file
 

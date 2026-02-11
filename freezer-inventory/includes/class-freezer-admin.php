@@ -19,19 +19,11 @@ class Freezer_Admin {
 		);
 		add_submenu_page(
 			'freezer-inventory',
-			__( 'Locations', 'freezer-inventory' ),
-			__( 'Locations', 'freezer-inventory' ),
+			__( 'Settings', 'freezer-inventory' ),
+			__( 'Settings', 'freezer-inventory' ),
 			'manage_options',
-			'freezer-locations',
-			array( __CLASS__, 'render_locations_page' )
-		);
-		add_submenu_page(
-			'freezer-inventory',
-			__( 'Freezers', 'freezer-inventory' ),
-			__( 'Freezers', 'freezer-inventory' ),
-			'manage_options',
-			'freezer-freezers',
-			array( __CLASS__, 'render_freezers_page' )
+			'freezer-settings',
+			array( __CLASS__, 'render_settings_page' )
 		);
 		add_submenu_page(
 			'freezer-inventory',
@@ -54,10 +46,8 @@ class Freezer_Admin {
 	public static function enqueue_assets( $hook ) {
 		if ( $hook === 'toplevel_page_freezer-inventory' ) {
 			self::do_enqueue_assets();
-		} elseif ( $hook === 'freezer-inventory_page_freezer-locations' ) {
-			self::do_enqueue_locations_assets();
-		} elseif ( $hook === 'freezer-inventory_page_freezer-freezers' ) {
-			self::do_enqueue_freezers_assets();
+		} elseif ( $hook === 'freezer-inventory_page_freezer-settings' ) {
+			self::do_enqueue_settings_assets();
 		} elseif ( $hook === 'freezer-inventory_page_freezer-item-names' ) {
 			self::do_enqueue_item_names_assets();
 		} elseif ( $hook === 'freezer-inventory_page_freezer-csv' ) {
@@ -85,10 +75,11 @@ class Freezer_Admin {
 			'locations'   => Freezer_Database::get_locations(),
 			'freezers'    => Freezer_Database::get_freezers(),
 			'itemNames'   => Freezer_Database::get_item_names(),
+			'categories'  => Freezer_Database::get_categories(),
 		) );
 	}
 
-	public static function do_enqueue_locations_assets() {
+	public static function do_enqueue_settings_assets() {
 		wp_enqueue_style(
 			'freezer-inventory-admin',
 			FREEZER_INVENTORY_PLUGIN_URL . 'admin/css/admin.css',
@@ -96,36 +87,16 @@ class Freezer_Admin {
 			FREEZER_INVENTORY_VERSION
 		);
 		wp_enqueue_script(
-			'freezer-inventory-locations',
-			FREEZER_INVENTORY_PLUGIN_URL . 'admin/js/locations.js',
+			'freezer-inventory-settings',
+			FREEZER_INVENTORY_PLUGIN_URL . 'admin/js/settings.js',
 			array(),
 			FREEZER_INVENTORY_VERSION,
 			true
 		);
-		wp_localize_script( 'freezer-inventory-locations', 'freezerInventory', array(
+		wp_localize_script( 'freezer-inventory-settings', 'freezerInventory', array(
 			'restUrl'  => rest_url( 'freezer-inventory/v1' ),
 			'nonce'    => wp_create_nonce( 'wp_rest' ),
 			'freezers' => Freezer_Database::get_freezers(),
-		) );
-	}
-
-	public static function do_enqueue_freezers_assets() {
-		wp_enqueue_style(
-			'freezer-inventory-admin',
-			FREEZER_INVENTORY_PLUGIN_URL . 'admin/css/admin.css',
-			array(),
-			FREEZER_INVENTORY_VERSION
-		);
-		wp_enqueue_script(
-			'freezer-inventory-freezers',
-			FREEZER_INVENTORY_PLUGIN_URL . 'admin/js/freezers.js',
-			array(),
-			FREEZER_INVENTORY_VERSION,
-			true
-		);
-		wp_localize_script( 'freezer-inventory-freezers', 'freezerInventory', array(
-			'restUrl' => rest_url( 'freezer-inventory/v1' ),
-			'nonce'   => wp_create_nonce( 'wp_rest' ),
 		) );
 	}
 
@@ -133,12 +104,8 @@ class Freezer_Admin {
 		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/admin-page.php';
 	}
 
-	public static function render_locations_page() {
-		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/locations-page.php';
-	}
-
-	public static function render_freezers_page() {
-		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/freezers-page.php';
+	public static function render_settings_page() {
+		include FREEZER_INVENTORY_PLUGIN_DIR . 'admin/views/settings-page.php';
 	}
 
 	public static function render_item_names_page() {

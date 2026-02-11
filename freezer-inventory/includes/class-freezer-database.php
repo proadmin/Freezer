@@ -11,6 +11,7 @@ class Freezer_Database {
 	const LOCATIONS_TABLE_NAME = 'freezer_locations';
 	const FREEZERS_TABLE_NAME  = 'freezer_freezers';
 	const ITEM_NAMES_TABLE     = 'freezer_item_names';
+	const CATEGORIES_TABLE     = 'freezer_categories';
 
 	public static function get_table_name() {
 		global $wpdb;
@@ -30,6 +31,11 @@ class Freezer_Database {
 	public static function get_item_names_table_name() {
 		global $wpdb;
 		return $wpdb->prefix . self::ITEM_NAMES_TABLE;
+	}
+
+	public static function get_categories_table_name() {
+		global $wpdb;
+		return $wpdb->prefix . self::CATEGORIES_TABLE;
 	}
 
 	public static function create_table() {
@@ -88,6 +94,16 @@ class Freezer_Database {
 			UNIQUE KEY name (name)
 		) $charset;";
 		dbDelta( $sql4 );
+
+		// Categories table.
+		$cat_table = self::get_categories_table_name();
+		$sql5 = "CREATE TABLE $cat_table (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			name varchar(100) NOT NULL,
+			PRIMARY KEY (id),
+			UNIQUE KEY name (name)
+		) $charset;";
+		dbDelta( $sql5 );
 	}
 
 	// ------------------------------------------------------------------
@@ -453,6 +469,114 @@ class Freezer_Database {
 		}
 	}
 
+	// ------------------------------------------------------------------
+	// Categories CRUD
+	// ------------------------------------------------------------------
+
+	private static $default_categories = array(
+		'Bacon', 'Beans', 'Beef', 'Bread', 'Cheese', 'Chicken', 'Dairy',
+		'Dip', 'Fruits', 'Ice Cream', 'Meat', 'Pork', 'Prepared',
+		'Prepared Meals', 'Sauce', 'Sausage', 'Soup', 'Stock', 'Turkey',
+		'Vegetables', 'Other',
+	);
+
+	public static function get_categories() {
+		global $wpdb;
+		$table = self::get_categories_table_name();
+		$rows = $wpdb->get_results( "SELECT id, name FROM $table ORDER BY name", ARRAY_A );
+		if ( ! $rows ) {
+			return array();
+		}
+		foreach ( $rows as &$row ) {
+			$row['id'] = (int) $row['id'];
+		}
+		return $rows;
+	}
+
+	public static function add_category( $name ) {
+		global $wpdb;
+		$table = self::get_categories_table_name();
+		$name  = sanitize_text_field( $name );
+		if ( ! $name ) {
+			return new WP_Error( 'missing', __( 'Category name is required.', 'freezer-inventory' ) );
+		}
+		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table WHERE name = %s", $name ) );
+		if ( $exists ) {
+			return new WP_Error( 'duplicate', __( 'This category already exists.', 'freezer-inventory' ) );
+		}
+		$r = $wpdb->insert( $table, array( 'name' => $name ), array( '%s' ) );
+		if ( $r === false ) {
+			return new WP_Error( 'db', __( 'Could not save category.', 'freezer-inventory' ) );
+		}
+		return array( 'id' => (int) $wpdb->insert_id, 'name' => $name );
+	}
+
+	public static function ensure_category( $name ) {
+		global $wpdb;
+		$table = self::get_categories_table_name();
+		$name  = sanitize_text_field( $name );
+		if ( ! $name ) {
+			return;
+		}
+		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table WHERE name = %s", $name ) );
+		if ( ! $exists ) {
+			$wpdb->insert( $table, array( 'name' => $name ), array( '%s' ) );
+		}
+	}
+
+	public static function delete_category( $id ) {
+		global $wpdb;
+		$id    = (int) $id;
+		$table = self::get_categories_table_name();
+		$name  = $wpdb->get_var( $wpdb->prepare( "SELECT name FROM $table WHERE id = %d", $id ) );
+		if ( ! $name ) {
+			return new WP_Error( 'not_found', __( 'Category not found.', 'freezer-inventory' ) );
+		}
+		$inv_table = self::get_table_name();
+		$count     = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $inv_table WHERE category = %s", $name ) );
+		if ( $count > 0 ) {
+			return new WP_Error( 'in_use', sprintf( __( 'Cannot delete: %d item(s) use this category.', 'freezer-inventory' ), $count ) );
+		}
+		$deleted = $wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
+		if ( $deleted === false ) {
+			return new WP_Error( 'db', __( 'Could not delete category.', 'freezer-inventory' ) );
+		}
+		return true;
+	}
+
+	public static function category_item_counts() {
+		global $wpdb;
+		$table = self::get_table_name();
+		$rows  = $wpdb->get_results( "SELECT category, COUNT(*) as cnt FROM $table GROUP BY category", ARRAY_A );
+		$map   = array();
+		foreach ( $rows as $row ) {
+			$map[ $row['category'] ] = (int) $row['cnt'];
+		}
+		return $map;
+	}
+
+	public static function migrate_categories() {
+		global $wpdb;
+		$cat_table = self::get_categories_table_name();
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM $cat_table" );
+		if ( $count > 0 ) {
+			return;
+		}
+		// Seed from hardcoded defaults.
+		foreach ( self::$default_categories as $name ) {
+			$wpdb->insert( $cat_table, array( 'name' => $name ), array( '%s' ) );
+		}
+		// Also add any categories found in existing inventory items.
+		$inv_table = self::get_table_name();
+		$extras = $wpdb->get_col( "SELECT DISTINCT category FROM $inv_table WHERE category != ''" );
+		foreach ( $extras as $name ) {
+			$exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $cat_table WHERE name = %s", $name ) );
+			if ( ! $exists ) {
+				$wpdb->insert( $cat_table, array( 'name' => $name ), array( '%s' ) );
+			}
+		}
+	}
+
 	/**
 	 * Find or create a location by freezer/shelf/bin.
 	 */
@@ -607,8 +731,9 @@ class Freezer_Database {
 			return new WP_Error( 'db', __( 'Could not save item.', 'freezer-inventory' ) );
 		}
 
-		// Auto-add item name to the managed list.
+		// Auto-add item name and category to the managed lists.
 		self::ensure_item_name( $name );
+		self::ensure_category( $category );
 
 		return self::get_item_by_id( $id );
 	}
