@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="freezer-inventory-wrap">
+<div class="freezer-inventory-wrap freezer-frontend">
     <div class="freezer-inventory-container">
         <header class="freezer-inventory-header">
             <h1>Freezer Inventory Manager</h1>

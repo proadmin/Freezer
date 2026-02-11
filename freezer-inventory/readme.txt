@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 2.0.9
+Stable tag: 2.0.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,7 @@ Freezer Inventory Manager lets you:
 * Dedicated CSV Import / Export admin page with column documentation and example CSV
 * Print-friendly PDF view
 * Embed the full inventory on any frontend page with the `[freezer_inventory]` shortcode — all visitors can view and edit (without CSV functions)
+* Fully responsive layout — uses full available width on all screen sizes
 * Automatic updates from GitHub releases via the WordPress Plugins page
 
 == Installation ==
@@ -69,6 +70,12 @@ The item is automatically deleted from the inventory.
 You can delete them from the Settings or Item Names pages, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 2.1.0 =
+* Made plugin fully responsive — uses full available width instead of 1200px max
+* Form inputs and filters now fill their containers properly on all screen sizes
+* Frontend shortcode embed gets cleaner styling (no borders/shadows) for better theme integration
+* Improved mobile layout — full-width buttons, stacked filters, tighter spacing
 
 = 2.0.9 =
 * Frontend shortcode now works for all visitors (no login required) with full read-write access
