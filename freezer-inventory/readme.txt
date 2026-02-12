@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 2.0.18
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,29 +70,33 @@ You can delete them from the Settings page, but only if no inventory items or lo
 
 == Changelog ==
 
-= 2.0.18 =
+= 1.0.0 =
+* Official v1.0.0 release — stable, production-ready version
+* Previous releases renumbered to v0.x.x (beta versions)
+
+= 0.0.18 =
 * Updated plugin author to ProAdmin with link to https://www.proadmin.com
 
-= 2.0.17 =
+= 0.0.17 =
 * Fixed plugin updater — use read-time filter so update notice appears reliably on the Plugins page
 
-= 2.0.16 =
+= 0.0.16 =
 * Removed hardcoded category badge colors — all categories now use a uniform neutral style
 
-= 2.0.15 =
+= 0.0.15 =
 * Fixed plugin updater not showing upgrade notice on the Plugins page
 
-= 2.0.14 =
+= 0.0.14 =
 * Removed Shelf and Bin filter selectors from inventory — filter by freezer, category, and raw/cooked
 * Converted all dates to month/year format — add form uses month picker, table shows "Mon YYYY"
 * CSV and PDF exports now use month/year format
 * CSV import accepts both "Month Added" and legacy "Date Added" headers
 
-= 2.0.13 =
+= 0.0.13 =
 * Improved frontend shortcode responsiveness — full width on all devices and screen sizes
 * Tighter layout on small screens (480px and below) for maximum table space
 
-= 2.0.12 =
+= 0.0.12 =
 * Consolidated Item Names into the Settings page as a tabbed interface (Categories, Freezers, Locations, Item Names)
 * Removed Item Names as a separate admin submenu page
 
