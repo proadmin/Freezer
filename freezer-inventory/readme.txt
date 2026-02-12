@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 2.0.16
+Stable tag: 2.0.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,9 @@ The item is automatically deleted from the inventory.
 You can delete them from the Settings page, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 2.0.17 =
+* Fixed plugin updater — use read-time filter so update notice appears reliably on the Plugins page
 
 = 2.0.16 =
 * Removed hardcoded category badge colors — all categories now use a uniform neutral style
