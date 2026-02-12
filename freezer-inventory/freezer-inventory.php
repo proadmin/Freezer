@@ -3,9 +3,9 @@
  * Plugin Name: Freezer Inventory Manager
  * Plugin URI: https://github.com/proadmin/Freezer
  * Description: Manage your freezer inventory with categories, locations, partial quantities, and PDF export.
- * Version: 2.0.17
- * Author: Freezer Inventory
- * Author URI: ''
+ * Version: 2.0.18
+ * Author: ProAdmin
+ * Author URI: https://www.proadmin.com
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: freezer-inventory
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FREEZER_INVENTORY_VERSION', '2.0.17' );
+define( 'FREEZER_INVENTORY_VERSION', '2.0.18' );
 define( 'FREEZER_INVENTORY_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FREEZER_INVENTORY_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
