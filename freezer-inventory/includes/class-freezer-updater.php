@@ -84,8 +84,8 @@ class Freezer_Updater {
 	}
 
 	public static function check_for_update( $transient ) {
-		if ( empty( $transient->checked ) ) {
-			return $transient;
+		if ( ! is_object( $transient ) ) {
+			$transient = new stdClass();
 		}
 
 		$release = self::fetch_release();
@@ -96,6 +96,10 @@ class Freezer_Updater {
 		$current_version = FREEZER_INVENTORY_VERSION;
 		if ( version_compare( $release['version'], $current_version, '>' ) ) {
 			$plugin_basename = self::get_plugin_basename();
+			// Remove from no_update so WordPress doesn't suppress the notice.
+			if ( isset( $transient->no_update[ $plugin_basename ] ) ) {
+				unset( $transient->no_update[ $plugin_basename ] );
+			}
 			$transient->response[ $plugin_basename ] = (object) array(
 				'slug'        => 'freezer-inventory',
 				'plugin'      => $plugin_basename,
