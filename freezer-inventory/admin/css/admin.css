@@ -88,14 +88,7 @@ select.cell-editor { padding: 4px 6px; }
 .cascade-editor select.cell-editor { flex: 1; min-width: 80px; font-size: 12px; padding: 3px 4px; }
 
 /* Category badges */
-.category-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
-.category-badge-Meat { background: #ffe0e0; color: #c00; }
-.category-badge-Vegetables { background: #e0ffe0; color: #060; }
-.category-badge-Fruits { background: #ffe0ff; color: #606; }
-.category-badge-Prepared-Meals { background: #fff0e0; color: #c60; }
-.category-badge-Dairy { background: #e0f0ff; color: #006; }
-.category-badge-Bread { background: #fff8e0; color: #660; }
-.category-badge-Other { background: #f0f0f0; color: #333; }
+.category-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; background: #f0f0f0; color: #333; }
 
 .inventory-footer { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; }
 
