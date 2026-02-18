@@ -18,7 +18,7 @@ A WordPress plugin to manage your freezer inventory with an editable spreadsheet
 - **Raw / Cooked field** — required preparation status with filtering support
 - **Sortable columns** — click any column header to sort ascending or descending
 - **Add Item button** — jump directly to the add form from the top of the inventory panel
-- **Search and filter** by name, category, freezer, and raw/cooked
+- **Search and filter** by name, category, freezer, and raw/cooked — search field takes at least 1/3 of the row width
 - **CSV import/export** — dedicated admin page with column documentation and example CSV
 - **PDF export** — print-friendly view in a new tab
 - **Frontend shortcode** — embed on any page with `[freezer_inventory]` — all visitors can view and edit (without CSV functions)

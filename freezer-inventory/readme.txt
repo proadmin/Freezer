@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,9 @@ The item is automatically deleted from the inventory.
 You can delete them from the Settings page, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 1.0.4 =
+* Filter bar layout: search field takes at least 1/3 width, dropdowns share the rest equally, Clear Filters button is compact with two-line text
 
 = 1.0.3 =
 * Minor readme copy edits
