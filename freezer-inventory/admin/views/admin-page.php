@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
                             <option value="Cooked">Cooked</option>
                         </select>
                     </div>
-                    <button id="clearFilters" class="btn btn-secondary">Clear Filters</button>
+                    <button id="clearFilters" class="btn btn-secondary">Clear<br>Filters</button>
                 </div>
             </section>
 
