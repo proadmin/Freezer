@@ -4,11 +4,11 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Manage your freezer inventory with an editable spreadsheet table, categories, managed locations, and PDF/CSV export. Uses the WordPress database for storage.
+Manage your freezer inventory from an editable table. Supports categories, locations, and PDF/CSV export. Data is stored in the WordPress database.
 
 == Description ==
 
@@ -43,7 +43,7 @@ Freezer Inventory Manager lets you:
 
 = Where is data stored? =
 
-In custom database tables: `wp_freezer_inventory`, `wp_freezer_locations`, `wp_freezer_freezers`, `wp_freezer_item_names`, and `wp_freezer_categories` (prefix may vary). Admin pages require `manage_options`. The frontend shortcode is accessible to all visitors.
+In custom database tables: `wp_freezer_inventory`, `wp_freezer_locations`, `wp_freezer_freezers`, `wp_freezer_item_names`, and `wp_freezer_categories` (prefix may vary). Admin pages require the `manage_options` capability. The shortcode is accessible to all visitors.
 
 = How do I get a PDF? =
 
@@ -71,6 +71,9 @@ You can delete them from the Settings page, but only if no inventory items or lo
 
 == Changelog ==
 
+= 1.0.3 =
+* Minor readme copy edits
+
 = 1.0.2 =
 * Moved Add New Item form to the bottom of the page
 * Added "Add Item" button to the inventory panel that jumps to the form
@@ -79,7 +82,7 @@ You can delete them from the Settings page, but only if no inventory items or lo
 * Sortable columns — click any column header to sort ascending or descending
 
 = 1.0.0 =
-* Official v1.0.0 release — stable, production-ready version
+* First stable release
 * Previous releases renumbered to v0.x.x (beta versions)
 
 = 0.0.18 =
