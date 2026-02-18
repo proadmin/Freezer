@@ -1,4 +1,5 @@
 /* Freezer Inventory - Admin styles (scoped) */
+html { scroll-behavior: smooth; }
 .freezer-inventory-wrap { margin: 15px 15px 15px 0; }
 .freezer-inventory-container { width: 100%; box-sizing: border-box; }
 .freezer-inventory-header { text-align: center; color: #1d2327; margin-bottom: 25px; }
@@ -49,6 +50,7 @@
 
 .inventory-header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 15px; }
 .inventory-header .stats { flex: 1; margin-bottom: 0; }
+.btn-add-item { white-space: nowrap; flex-shrink: 0; }
 .stats { background: #e7f3ff; padding: 12px; border-radius: 4px; font-weight: 600; color: #0056b3; font-size: 14px; }
 
 /* --- Inventory table --- */

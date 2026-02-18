@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,10 @@ The item is automatically deleted from the inventory.
 You can delete them from the Settings page, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 1.0.2 =
+* Moved Add New Item form to the bottom of the page
+* Added "Add Item" button to the inventory panel that jumps to the form
 
 = 1.0.1 =
 * Sortable columns — click any column header to sort ascending or descending

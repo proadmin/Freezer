@@ -9,7 +9,67 @@ defined( 'ABSPATH' ) || exit;
         </header>
 
         <main class="freezer-inventory-main">
-            <section class="form-section">
+            <section class="filters-section">
+                <h2>Inventory</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="searchInput">Search:</label>
+                        <input type="text" id="searchInput" placeholder="Search by name...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="categoryFilter">Category:</label>
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="freezerFilter">Freezer:</label>
+                        <select id="freezerFilter">
+                            <option value="">All Freezers</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="preparationFilter">Raw / Cooked:</label>
+                        <select id="preparationFilter">
+                            <option value="">All</option>
+                            <option value="Raw">Raw</option>
+                            <option value="Cooked">Cooked</option>
+                        </select>
+                    </div>
+                    <button id="clearFilters" class="btn btn-secondary">Clear Filters</button>
+                </div>
+            </section>
+
+            <section class="inventory-section">
+                <div class="inventory-header">
+                    <a href="#addItemSection" class="btn btn-primary btn-add-item">+ Add Item</a>
+                    <div id="inventoryStats" class="stats"></div>
+                </div>
+                <div class="inventory-table-wrap">
+                    <table id="inventoryTable" class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="name">Name <span class="sort-indicator"></span></th>
+                                <th data-sort="category">Category <span class="sort-indicator"></span></th>
+                                <th data-sort="quantity">Qty <span class="sort-indicator"></span></th>
+                                <th data-sort="unit">Unit <span class="sort-indicator"></span></th>
+                                <th data-sort="preparation">Raw / Cooked <span class="sort-indicator"></span></th>
+                                <th data-sort="location">Location <span class="sort-indicator"></span></th>
+                                <th>Notes</th>
+                                <th data-sort="date_added">Month Added <span class="sort-indicator"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryBody">
+                            <tr><td colspan="8" class="empty-message">No items in freezer. Add your first item below!</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="inventory-footer">
+                    <button type="button" id="downloadPdfBtn" class="btn btn-pdf">Download PDF</button>
+                </div>
+            </section>
+
+            <section class="form-section" id="addItemSection">
                 <h2>Add New Item</h2>
                 <form id="addItemForm">
                     <div class="form-row">
@@ -86,65 +146,6 @@ defined( 'ABSPATH' ) || exit;
 
                     <button type="submit" class="btn btn-primary">Add to Freezer</button>
                 </form>
-            </section>
-
-            <section class="filters-section">
-                <h2>Inventory</h2>
-                <div class="filters">
-                    <div class="filter-group">
-                        <label for="searchInput">Search:</label>
-                        <input type="text" id="searchInput" placeholder="Search by name...">
-                    </div>
-                    <div class="filter-group">
-                        <label for="categoryFilter">Category:</label>
-                        <select id="categoryFilter">
-                            <option value="">All Categories</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="freezerFilter">Freezer:</label>
-                        <select id="freezerFilter">
-                            <option value="">All Freezers</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="preparationFilter">Raw / Cooked:</label>
-                        <select id="preparationFilter">
-                            <option value="">All</option>
-                            <option value="Raw">Raw</option>
-                            <option value="Cooked">Cooked</option>
-                        </select>
-                    </div>
-                    <button id="clearFilters" class="btn btn-secondary">Clear Filters</button>
-                </div>
-            </section>
-
-            <section class="inventory-section">
-                <div class="inventory-header">
-                    <div id="inventoryStats" class="stats"></div>
-                </div>
-                <div class="inventory-table-wrap">
-                    <table id="inventoryTable" class="inventory-table">
-                        <thead>
-                            <tr>
-                                <th data-sort="name">Name <span class="sort-indicator"></span></th>
-                                <th data-sort="category">Category <span class="sort-indicator"></span></th>
-                                <th data-sort="quantity">Qty <span class="sort-indicator"></span></th>
-                                <th data-sort="unit">Unit <span class="sort-indicator"></span></th>
-                                <th data-sort="preparation">Raw / Cooked <span class="sort-indicator"></span></th>
-                                <th data-sort="location">Location <span class="sort-indicator"></span></th>
-                                <th>Notes</th>
-                                <th data-sort="date_added">Month Added <span class="sort-indicator"></span></th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryBody">
-                            <tr><td colspan="8" class="empty-message">No items in freezer. Add your first item above!</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="inventory-footer">
-                    <button type="button" id="downloadPdfBtn" class="btn btn-pdf">Download PDF</button>
-                </div>
             </section>
         </main>
     </div>

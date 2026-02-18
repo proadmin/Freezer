@@ -854,7 +854,7 @@
             var td = document.createElement('td');
             td.colSpan = 8;
             td.className = 'empty-message';
-            td.textContent = allItems.length === 0 ? 'No items in freezer. Add your first item above!' : 'No items found. Try adjusting your filters.';
+            td.textContent = allItems.length === 0 ? 'No items in freezer. Add your first item below!' : 'No items found. Try adjusting your filters.';
             tr.appendChild(td);
             inventoryBody.appendChild(tr);
             return;
