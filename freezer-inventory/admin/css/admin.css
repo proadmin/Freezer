@@ -59,6 +59,12 @@
     font-weight: 600; font-size: 13px; white-space: nowrap;
     position: sticky; top: 0; z-index: 1;
 }
+.inventory-table thead th[data-sort] {
+    cursor: pointer; user-select: none;
+}
+.inventory-table thead th[data-sort]:hover { background: #5a6fd6; }
+.inventory-table thead th.sort-active { background: #4a5bc4; }
+.sort-indicator { font-size: 11px; opacity: 0.9; }
 .inventory-table tbody tr { border-bottom: 1px solid #e0e0e0; }
 .inventory-table tbody tr:nth-child(even) { background: #f9f9fb; }
 .inventory-table tbody tr:hover { background: #eef1ff; }

@@ -103,6 +103,8 @@
     var allItems = [];
     var filteredItems = [];
     var editingCell = null;
+    var sortCol = null;
+    var sortDir = 'asc';
 
     function setupEventListeners() {
         if (addItemForm) addItemForm.addEventListener('submit', handleAddItem);
@@ -128,6 +130,20 @@
                 populateAddBins();
             });
         }
+
+        document.querySelectorAll('#inventoryTable thead th[data-sort]').forEach(function(th) {
+            th.addEventListener('click', function() {
+                var col = th.dataset.sort;
+                if (sortCol === col) {
+                    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortCol = col;
+                    sortDir = 'asc';
+                }
+                applySorting();
+                renderInventory();
+            });
+        });
 
         populateAddCategories();
         populateItemNameList();
@@ -372,6 +388,40 @@
             });
     }
 
+    function getSortValue(item, col) {
+        if (col === 'quantity') return parseFloat(item.quantity) || 0;
+        if (col === 'date_added') return item.date_added ? new Date(item.date_added).getTime() : 0;
+        if (col === 'location') return locationLabel(item).toLowerCase();
+        return (item[col] || '').toString().toLowerCase();
+    }
+
+    function applySorting() {
+        if (!sortCol) return;
+        var dir = sortDir === 'asc' ? 1 : -1;
+        filteredItems.sort(function(a, b) {
+            var av = getSortValue(a, sortCol);
+            var bv = getSortValue(b, sortCol);
+            if (av < bv) return -1 * dir;
+            if (av > bv) return 1 * dir;
+            return 0;
+        });
+    }
+
+    function updateSortHeaders() {
+        var ths = document.querySelectorAll('#inventoryTable thead th[data-sort]');
+        ths.forEach(function(th) {
+            var indicator = th.querySelector('.sort-indicator');
+            if (!indicator) return;
+            if (th.dataset.sort === sortCol) {
+                indicator.textContent = sortDir === 'asc' ? ' ▲' : ' ▼';
+                th.classList.add('sort-active');
+            } else {
+                indicator.textContent = '';
+                th.classList.remove('sort-active');
+            }
+        });
+    }
+
     function applyFilters() {
         var searchQuery = (searchInput && searchInput.value || '').toLowerCase().trim();
         var categoryValue = categoryFilter ? categoryFilter.value : '';
@@ -385,6 +435,7 @@
             var matchPreparation = !preparationValue || item.preparation === preparationValue;
             return matchSearch && matchCategory && matchFreezer && matchPreparation;
         });
+        applySorting();
         renderInventory();
         updateStats();
     }
@@ -796,6 +847,7 @@
         if (!inventoryBody) return;
         editingCell = null;
         inventoryBody.innerHTML = '';
+        updateSortHeaders();
 
         if (filteredItems.length === 0) {
             var tr = document.createElement('tr');

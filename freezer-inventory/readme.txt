@@ -4,7 +4,7 @@ Contributors: freezer-inventory
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,7 @@ Freezer Inventory Manager lets you:
 * Editable month field with inline month picker
 * Navigate between cells with Tab, Enter, and Escape keys
 * Items are automatically removed when quantity reaches zero
+* Sort any column ascending or descending by clicking the column header
 * Search and filter by name, category, freezer, and raw/cooked
 * Manage freezers, locations, and categories from a single Settings page
 * Managed categories — add/delete category presets from the Settings page; new categories auto-created on import
@@ -69,6 +70,9 @@ The item is automatically deleted from the inventory.
 You can delete them from the Settings page, but only if no inventory items or locations currently reference them.
 
 == Changelog ==
+
+= 1.0.1 =
+* Sortable columns — click any column header to sort ascending or descending
 
 = 1.0.0 =
 * Official v1.0.0 release — stable, production-ready version

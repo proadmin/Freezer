@@ -127,14 +127,14 @@ defined( 'ABSPATH' ) || exit;
                     <table id="inventoryTable" class="inventory-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Qty</th>
-                                <th>Unit</th>
-                                <th>Raw / Cooked</th>
-                                <th>Location</th>
+                                <th data-sort="name">Name <span class="sort-indicator"></span></th>
+                                <th data-sort="category">Category <span class="sort-indicator"></span></th>
+                                <th data-sort="quantity">Qty <span class="sort-indicator"></span></th>
+                                <th data-sort="unit">Unit <span class="sort-indicator"></span></th>
+                                <th data-sort="preparation">Raw / Cooked <span class="sort-indicator"></span></th>
+                                <th data-sort="location">Location <span class="sort-indicator"></span></th>
                                 <th>Notes</th>
-                                <th>Month Added</th>
+                                <th data-sort="date_added">Month Added <span class="sort-indicator"></span></th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody">
