@@ -130,6 +130,16 @@ class Freezer_Admin {
 		return ob_get_clean();
 	}
 
+	public static function maybe_nocache() {
+		global $post;
+		if ( $post && has_shortcode( $post->post_content, 'freezer_inventory' ) ) {
+			nocache_headers();
+			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+				define( 'DONOTCACHEPAGE', true );
+			}
+		}
+	}
+
 	/**
 	 * HTML for print/PDF (opened in new window).
 	 */

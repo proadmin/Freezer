@@ -213,8 +213,10 @@ class Freezer_Rest {
 			'location' => $request->get_param( 'location' ),
 			'search'   => $request->get_param( 'search' ),
 		);
-		$items = Freezer_Database::get_items( $args );
-		return new WP_REST_Response( $items, 200 );
+		$items    = Freezer_Database::get_items( $args );
+		$response = new WP_REST_Response( $items, 200 );
+		$response->header( 'Cache-Control', 'no-store, no-cache, must-revalidate' );
+		return $response;
 	}
 
 	public static function add_item( $request ) {
